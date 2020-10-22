@@ -125,14 +125,14 @@ public class FuenteDeMarkov extends Fuente
 			//Multiplicación de matriz por vector
 			for (i=0;i<this.cantSimbolos;i++)
 				for (j=0;j<this.cantSimbolos;j++)
-					vAux[i] += numberFormat.format(transAux[i][j] * this.vEstacionario[j]);
+					vAux[i] += transAux[i][j] * this.vEstacionario[j];
 			sumaV = sumaVAux = 0;
 			for (i=0;i<this.cantSimbolos;i++)
 			{
 				sumaV += this.vEstacionario[i];
 				sumaVAux += vAux[i];
 			}
-			if (Math.abs(sumaV - sumaVAux) == 1)
+			if (Math.abs(sumaV - sumaVAux) == 0)
 				termino = true;
 			else
 				for (i=0;i<this.cantSimbolos;i++)
