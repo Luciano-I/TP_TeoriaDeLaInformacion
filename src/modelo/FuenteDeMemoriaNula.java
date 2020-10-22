@@ -6,11 +6,9 @@ import java.util.Iterator;
 
 
 //REVISAR COMO SE USAN LOS STRINGS. HAY QUE USAR EL CONSTRUCTOR
-public class FuenteDeMemoriaNula 
+public class FuenteDeMemoriaNula extends Fuente
 {
-	private int cantSimbolos;
 	private String tabla[][]; 
-	private ArrayList<String> secuencia = new ArrayList<String>();
 	private double cantInfo[], probabilidades[];
 	
 	public FuenteDeMemoriaNula(String tabla[][],int cantSimbolos)
@@ -45,13 +43,6 @@ public class FuenteDeMemoriaNula
 			this.probabilidades[i] = (double) Collections.frequency(this.secuencia, this.tabla[i][0]) / this.secuencia.size();
 		
 		this.generarCantidadInfo();
-	}
-	
-	public void mostrarSecuencia()
-	{
-		Iterator<String> it = this.secuencia.iterator();
-		while (it.hasNext())
-			System.out.print(it.next() + " ");
 	}
 	
 	public void mostrarDatos()
@@ -92,7 +83,7 @@ public class FuenteDeMemoriaNula
 	public FuenteDeMemoriaNula getOrdenN(int n)
 	{
 		int cantNueva = (int) Math.pow(this.cantSimbolos, n),h,i,j,k,l,tamBloque,repeticiones;
-		String tablaNueva[][] = new String[cantNueva][3];
+		String tablaNueva[][] = new String[cantNueva][2];
 		double probNuevas[] = new double[cantNueva];
 		
 		//Inicializo la tabla nueva
@@ -113,8 +104,8 @@ public class FuenteDeMemoriaNula
 				for (i=0;i<this.cantSimbolos;i++)
 					for (j=0;j<tamBloque;j++)
 					{
-						tablaNueva[k][0] += this.tabla[i][0]; //La tabla no tiene formato simbolo-codigo-prob?
-						probNuevas[k] *= Double.parseDouble(this.tabla[i][1]); //La tabla no tiene formato simbolo-codigo-prob?
+						tablaNueva[k][0] += this.tabla[i][0];
+						probNuevas[k] *= Double.parseDouble(this.tabla[i][1]);
 						k++;
 					}
 			repeticiones *= this.cantSimbolos;
@@ -122,7 +113,7 @@ public class FuenteDeMemoriaNula
 		
 		//Asigno las probabilidades (en formato String para respetar la tabla)
 		for (k=0;k<cantNueva;k++)
-			tablaNueva[k][1] = Double.toString(probNuevas[k]); //La tabla no tiene formato simbolo-codigo-prob?
+			tablaNueva[k][1] = Double.toString(probNuevas[k]);
 			
 		return new FuenteDeMemoriaNula(tablaNueva,cantNueva);
 	}
