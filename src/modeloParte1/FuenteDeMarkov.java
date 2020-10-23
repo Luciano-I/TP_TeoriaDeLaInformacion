@@ -1,4 +1,4 @@
-package modelo;
+package modeloParte1;
 
 import java.util.Collections;
 import java.util.Iterator;

@@ -1,10 +1,10 @@
 package prueba;
 
-import modelo.FuenteDeMarkov;
-
 import java.text.ParseException;
 
-public class IncisoD {
+import modeloParte1.FuenteDeMarkov;
+
+public class P1IncisoD {
 
 	public static void main(String[] args)
 	{
