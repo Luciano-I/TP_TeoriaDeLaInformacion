@@ -39,8 +39,6 @@ public class FuenteDeMemoriaNula extends Fuente
 		
 		for (i=0;i<this.cantSimbolos;i++)
 			this.probabilidadesReales[i] = (double) Collections.frequency(this.secuencia, this.tabla[i][0]) / this.secuencia.size();
-		
-		this.generarCantidadInfo();
 	}
 	
 	public void mostrarDatos()
@@ -55,15 +53,16 @@ public class FuenteDeMemoriaNula extends Fuente
 		System.out.println("\nEntropia: " + this.getEntropia());
 	}
 	
-	private void generarCantidadInfo()
+	public void generarCantidadInfo()
 	{
-		int i, ocurrencias;
+		int i;
+		double prob;
 		this.cantInfo = new double[this.cantSimbolos];
 		for (i=0;i<this.cantSimbolos;i++)
 		{
-			ocurrencias = Collections.frequency(this.secuencia, this.tabla[i][0]);
-			if (ocurrencias != 0)
-				this.cantInfo[i] = Math.log(1.0 / this.probabilidadesReales[i]) / Math.log(2);
+			prob = Double.parseDouble(tabla[i][1]);
+			if (prob != 0)
+				this.cantInfo[i] = Math.log(1.0 / prob) / Math.log(2);
 			else
 				this.cantInfo[i] = 0;
 		}
@@ -74,7 +73,7 @@ public class FuenteDeMemoriaNula extends Fuente
 		int i;
 		double sumatoria = 0;
 		for (i=0;i<this.cantSimbolos;i++)
-			sumatoria += this.cantInfo[i] * this.probabilidadesReales[i];
+			sumatoria += this.cantInfo[i] * Double.parseDouble(tabla[i][1]);
 		return sumatoria;
 	}
 	

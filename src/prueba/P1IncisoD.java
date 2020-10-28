@@ -1,7 +1,5 @@
 package prueba;
 
-import java.text.ParseException;
-
 import modeloParte1.FuenteDeMarkov;
 
 public class P1IncisoD {
@@ -27,11 +25,11 @@ public class P1IncisoD {
 		*/
 		
 		//PARA PROBAR FUENTE 2
-		/*
+		
 		fuente2.generarSecuencia(100000);
 		fuente2.generarVEstacionario();
 		fuente2.generarEntropia();
 		fuente2.mostrarDatos();
-		*/
+		
 	}
 }

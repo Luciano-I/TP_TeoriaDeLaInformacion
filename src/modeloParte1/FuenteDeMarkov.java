@@ -38,7 +38,6 @@ public class FuenteDeMarkov extends Fuente {
 	public void generarVEstacionario() {
 		int i, j, k;
 		boolean termino = false;
-		double vAux[] = new double[this.cantSimbolos];
 
 		// matrizAux1 es P^(n-1) matrizAux2 es P^(n)
 		double matrizAux1[][] = new double[this.cantSimbolos][this.cantSimbolos],
@@ -64,7 +63,7 @@ public class FuenteDeMarkov extends Fuente {
 			copiarMatriz(matrizAux1, matrizAux2);
 		}
 		for (i = 0; i < this.cantSimbolos; i++)
-			this.vEstacionario[i] = matrizAux1[i][i];
+			this.vEstacionario[i] = matrizAux2[i][i];
 		this.vEstacionario[1] += 1 - sumaVector(this.vEstacionario);
 	}
 
