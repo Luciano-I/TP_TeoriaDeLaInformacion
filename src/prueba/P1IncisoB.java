@@ -33,11 +33,11 @@ public class P1IncisoB {
 		*/
 		
 		//PARA PROBAR FUENTE 3
-		
+		/*
 		fuente3.generarSecuencia(100);
 		fuente3.generarCantidadInfo();
 		fuente3.mostrarDatos();
-		
+		*/
 	}
 
 }

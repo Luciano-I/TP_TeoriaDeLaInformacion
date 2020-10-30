@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.Iterator;
 
 public class FuenteDeMarkov extends Fuente {
-	private double transicion[][], vEstacionario[], entropia;
+	private double transicion[][], vEstacionario[];
 	private String[] indice;
 
 	public FuenteDeMarkov(String indice[], double transicion[][], int cantSimbolos) {
@@ -14,17 +14,27 @@ public class FuenteDeMarkov extends Fuente {
 		this.vEstacionario = new double[this.cantSimbolos];
 	}
 
+	@Override
 	public void generarSecuencia(int cantidad) {
 		double probAcum[] = new double[this.cantSimbolos];
 		double random;
 		int i, j, anterior;
+
+		// Añade un primer elemento al azar a la secuencia. En este caso se tratan como
+		// equiprobables.
 		anterior = (int) (Math.random() * this.cantSimbolos);
 		this.secuencia.add(indice[anterior]);
 
+		// Agrega n-1 elementos a la secuencia, siendo n el parámetro cantidad.
 		for (i = 1; i < cantidad; i++) {
+			// Genera un vector de probabilidades acumuladas a partir del último elemento
+			// agregado a la secuencia.
 			probAcum[0] = transicion[0][anterior];
 			for (j = 1; j < cantSimbolos; j++)
 				probAcum[j] = probAcum[j - 1] + transicion[j][anterior];
+
+			// Selecciona un elemento al azar basado en la función de probabilidades y lo
+			// agrega a la secuencia.
 			random = Math.random();
 			anterior = 0;
 			while (anterior < this.cantSimbolos && probAcum[anterior] <= random)
@@ -39,7 +49,7 @@ public class FuenteDeMarkov extends Fuente {
 		int i, j, k;
 		boolean termino = false;
 
-		// matrizAux1 es P^(n-1) matrizAux2 es P^(n)
+		// Matriz anterior y actual respectivamente
 		double matrizAux1[][] = new double[this.cantSimbolos][this.cantSimbolos],
 				matrizAux2[][] = new double[this.cantSimbolos][this.cantSimbolos];
 
@@ -62,8 +72,10 @@ public class FuenteDeMarkov extends Fuente {
 			}
 			copiarMatriz(matrizAux1, matrizAux2);
 		}
+		// Asigna el vector estacionario
 		for (i = 0; i < this.cantSimbolos; i++)
 			this.vEstacionario[i] = matrizAux2[i][i];
+		// Compensa por posibles errores de redondeo
 		this.vEstacionario[1] += 1 - sumaVector(this.vEstacionario);
 	}
 
@@ -83,21 +95,23 @@ public class FuenteDeMarkov extends Fuente {
 	}
 
 	// PRE: Se ejecutó el método generarVEstacionario.
-	public void generarEntropia() {
+	@Override
+	public double getEntropia() {
 		double sumatoria;
 		int i, j;
-		this.entropia = 0;
+		double retorno = 0;
 		for (j = 0; j < this.cantSimbolos; j++) {
 			sumatoria = 0;
 			for (i = 0; i < this.cantSimbolos; i++)
 				if (transicion[i][j] != 0)
 					sumatoria += -transicion[i][j] * Math.log(transicion[i][j]) / Math.log(2);
-			this.entropia += sumatoria * this.vEstacionario[j];
+			retorno += sumatoria * this.vEstacionario[j];
 		}
+		return retorno;
 	}
 
-	// PRE: Ya se ejecutaron los métodos generarSecuencia, generarVEstacionario y
-	// generarEntropia.
+	// PRE: Ya se ejecutaron los métodos generarSecuencia y generarVEstacionario.
+	@Override
 	public void mostrarDatos() {
 		int i;
 		System.out.println("Ocurrencias de cada símbolo:");
@@ -107,7 +121,7 @@ public class FuenteDeMarkov extends Fuente {
 		for (i = 0; i < this.cantSimbolos; i++)
 			System.out.print(this.vEstacionario[i] + " ");
 		System.out.println("\nSuma del vector estacionario: " + this.sumaVector(this.vEstacionario));
-		System.out.println("\nLa entropia es: " + this.entropia);
+		System.out.println("\nLa entropia es: " + this.getEntropia());
 	}
 
 	// Crea y muestra una nueva matriz de transición basada en la secuencia
@@ -134,6 +148,7 @@ public class FuenteDeMarkov extends Fuente {
 		this.imprimirTransiciones(transicionNueva);
 	}
 
+	// Devuelve la posición de elemento en el índice. Si no existe devuelve -1.
 	private int buscarIndice(String elemento) {
 		int i = 0;
 		while (i < this.cantSimbolos && !this.indice[i].equals(elemento))
@@ -144,6 +159,7 @@ public class FuenteDeMarkov extends Fuente {
 			return -1;
 	}
 
+	// Imprime los datos de la matriz pasada por parámetro.
 	private void imprimirTransiciones(double transicion[][]) {
 		int i, j;
 		for (i = 0; i < this.cantSimbolos; i++) {

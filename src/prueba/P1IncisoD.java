@@ -20,16 +20,14 @@ public class P1IncisoD {
 		/*
 		fuente1.generarSecuencia(100000);
 		fuente1.generarVEstacionario();
-		fuente1.generarEntropia();
 		fuente1.mostrarDatos();
 		*/
 		
 		//PARA PROBAR FUENTE 2
-		
+		/*
 		fuente2.generarSecuencia(100000);
 		fuente2.generarVEstacionario();
-		fuente2.generarEntropia();
 		fuente2.mostrarDatos();
-		fuente2.mostrarMatriz();
+		*/
 	}
 }
