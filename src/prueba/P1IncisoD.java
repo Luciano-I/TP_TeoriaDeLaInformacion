@@ -30,6 +30,6 @@ public class P1IncisoD {
 		fuente2.generarVEstacionario();
 		fuente2.generarEntropia();
 		fuente2.mostrarDatos();
-		
+		fuente2.mostrarMatriz();
 	}
 }

@@ -1,9 +1,5 @@
 package modeloParte2;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map.Entry;
-
 import java.util.TreeMap;
 
 public class FuenteDeMemoriaNula2 
@@ -79,7 +75,8 @@ public class FuenteDeMemoriaNula2
 		for (i=0;i<this.cantSimbolos;i++)
 		{
 			p = Double.parseDouble(this.tabla[i][2]);
-			sumatoria += p * Math.log(1/p)/Math.log(2);
+			if (p != 0)
+				sumatoria += p * Math.log(1/p)/Math.log(2);
 		}
 		return sumatoria;
 	}
