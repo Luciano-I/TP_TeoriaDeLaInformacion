@@ -43,7 +43,7 @@ public class FuenteDeMemoriaNula2 {
 		int i;
 		System.out.println("Símbolo:\tCódigo:\tProbabilidad:\n");
 		for (i = 0; i < this.cantSimbolos; i++)
-			System.out.println(this.tabla[i][0] + "\t" + this.tabla[i][1] + "\t" + this.tabla[i][2] + "\n");
+			System.out.println(this.tabla[i][0] + "\t\t" + this.tabla[i][1] + "\t" + this.tabla[i][2] + "\n");
 	}
 
 	public boolean esInstantaneo() {
