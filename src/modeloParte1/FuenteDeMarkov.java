@@ -1,10 +1,11 @@
 package modeloParte1;
 
+import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.Iterator;
 
 public class FuenteDeMarkov extends Fuente {
-	private double transicion[][], vEstacionario[];
+	private double transicion[][], transicionExperimental[][], vEstacionario[], vEstacionarioExperimental[];
 	private String[] indice;
 
 	public FuenteDeMarkov(String indice[], double transicion[][], int cantSimbolos) {
@@ -12,6 +13,7 @@ public class FuenteDeMarkov extends Fuente {
 		this.transicion = transicion;
 		this.cantSimbolos = cantSimbolos;
 		this.vEstacionario = new double[this.cantSimbolos];
+		this.vEstacionarioExperimental = new double[this.cantSimbolos];
 	}
 
 	@Override
@@ -66,7 +68,7 @@ public class FuenteDeMarkov extends Fuente {
 			// Chequea si las matrices son iguales elemento a elemento
 			termino = true;
 			i = 0;
-			while (i < cantSimbolos && termino) {
+			while (i < this.cantSimbolos && termino) {
 				termino = (matrizAux1[i][i] == matrizAux2[i][i]);
 				i++;
 			}
@@ -77,6 +79,41 @@ public class FuenteDeMarkov extends Fuente {
 			this.vEstacionario[i] = matrizAux2[i][i];
 		// Compensa por posibles errores de redondeo
 		this.vEstacionario[1] += 1 - sumaVector(this.vEstacionario);
+	}
+	
+	// PRE: Se ejecutó el método recrearMatriz.
+	public void generarVEstacionarioExperimental() {
+		int i, j, k;
+		boolean termino = false;
+
+		// Matriz anterior y actual respectivamente
+		double matrizAux1[][] = new double[this.cantSimbolos][this.cantSimbolos],
+				matrizAux2[][] = new double[this.cantSimbolos][this.cantSimbolos];
+
+		copiarMatriz(matrizAux1, this.transicionExperimental);
+
+		while (!termino) {
+			// Multiplicación de matriz por matriz
+			for (i = 0; i < this.cantSimbolos; i++)
+				for (j = 0; j < this.cantSimbolos; j++) {
+					matrizAux2[i][j] = 0;
+					for (k = 0; k < this.cantSimbolos; k++)
+						matrizAux2[i][j] += matrizAux1[i][k] * this.transicionExperimental[k][j];
+				}
+			// Chequea si las matrices son iguales elemento a elemento
+			termino = true;
+			i = 0;
+			while (i < this.cantSimbolos && termino) {
+				termino = (matrizAux1[i][i] == matrizAux2[i][i]);
+				i++;
+			}
+			copiarMatriz(matrizAux1, matrizAux2);
+		}
+		// Asigna el vector estacionario
+		for (i = 0; i < this.cantSimbolos; i++)
+			this.vEstacionarioExperimental[i] = matrizAux2[i][i];
+		// Compensa por posibles errores de redondeo
+		this.vEstacionarioExperimental[1] += 1 - sumaVector(this.vEstacionarioExperimental);
 	}
 
 	// Copia en matriz1 los datos de matriz2
@@ -109,6 +146,22 @@ public class FuenteDeMarkov extends Fuente {
 		}
 		return retorno;
 	}
+	
+	// PRE: Se ejecutó el método generarVEstacionarioExperimental.
+		@Override
+		public double getEntropiaExperimental() {
+			double sumatoria;
+			int i, j;
+			double retorno = 0;
+			for (j = 0; j < this.cantSimbolos; j++) {
+				sumatoria = 0;
+				for (i = 0; i < this.cantSimbolos; i++)
+					if (transicionExperimental[i][j] != 0)
+						sumatoria += -transicionExperimental[i][j] * Math.log(transicionExperimental[i][j]) / Math.log(2);
+				retorno += sumatoria * this.vEstacionarioExperimental[j];
+			}
+			return retorno;
+		}
 
 	// PRE: Ya se ejecutaron los métodos generarSecuencia y generarVEstacionario.
 	@Override
@@ -130,22 +183,22 @@ public class FuenteDeMarkov extends Fuente {
 	public void recrearMatriz() {
 		int i, j, cont;
 		String anterior, actual;
-		double transicionNueva[][] = new double[this.cantSimbolos][this.cantSimbolos];
+		this.transicionExperimental = new double[this.cantSimbolos][this.cantSimbolos];
 		Iterator<String> it = this.secuencia.iterator();
 		anterior = it.next();
 		while (it.hasNext()) {
 			actual = it.next();
-			transicionNueva[buscarIndice(actual)][buscarIndice(anterior)]++;
+			this.transicionExperimental[buscarIndice(actual)][buscarIndice(anterior)]++;
 			anterior = actual;
 		}
 		for (j = 0; j < this.cantSimbolos; j++) {
 			cont = 0;
 			for (i = 0; i < this.cantSimbolos; i++)
-				cont += transicionNueva[i][j];
-			for (i = 0; i < this.cantSimbolos; i++)
-				transicionNueva[i][j] /= cont;
+				cont += this.transicionExperimental[i][j];
+			if (cont != 0)
+				for (i = 0; i < this.cantSimbolos; i++)
+					this.transicionExperimental[i][j] /= cont;
 		}
-		this.imprimirTransiciones(transicionNueva);
 	}
 
 	// Devuelve la posición de elemento en el índice. Si no existe devuelve -1.
@@ -158,19 +211,50 @@ public class FuenteDeMarkov extends Fuente {
 		else
 			return -1;
 	}
-
-	// Imprime los datos de la matriz pasada por parámetro.
-	private void imprimirTransiciones(double transicion[][]) {
+	
+	public String getMatriz() {
+		String retorno = "";
 		int i, j;
 		for (i = 0; i < this.cantSimbolos; i++) {
 			for (j = 0; j < this.cantSimbolos; j++)
-				System.out.print("\t" + transicion[i][j]);
-			System.out.println();
+				retorno += this.transicion[i][j] + "\t";
+			retorno += "\n";
 		}
+		return retorno;
+	}
+	
+	public String getMatrizExperimental() {
+		String retorno = "";
+		int i, j;
+		for (i = 0; i < this.cantSimbolos; i++) {
+			for (j = 0; j < this.cantSimbolos; j++)
+				retorno += this.transicionExperimental[i][j] + "\t";
+			retorno += "\n";
+		}
+		return retorno;
+	}
+	
+	public String getVEstacionario()
+	{
+		DecimalFormat df = new DecimalFormat("#.###");
+		String retorno = "{";
+		int i;
+		retorno += df.format(this.vEstacionario[0]);
+		for (i = 1; i < this.cantSimbolos; i++)
+			retorno += "; " + df.format(this.vEstacionario[i]);
+		retorno += "}";
+		return retorno;
 	}
 
-	public void mostrarMatriz() {
-		this.imprimirTransiciones(this.transicion);
+	public String getVEstacionarioExperimental()
+	{
+		DecimalFormat df = new DecimalFormat("#.###");
+		String retorno = "{";
+		int i;
+		retorno += df.format(this.vEstacionarioExperimental[0]);
+		for (i = 1; i < this.cantSimbolos; i++)
+			retorno += "; " + df.format(this.vEstacionarioExperimental[i]);
+		retorno += "}";
+		return retorno;
 	}
-
 }

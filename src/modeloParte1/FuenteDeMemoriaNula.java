@@ -1,15 +1,16 @@
 package modeloParte1;
 
+import java.text.DecimalFormat;
 import java.util.Collections;
 
 public class FuenteDeMemoriaNula extends Fuente {
 	private String tabla[][];
-	private double cantInfo[], probabilidadesReales[];
+	private double cantInfo[], cantInfoExperimental[], probabilidadesExperimental[];
 
 	public FuenteDeMemoriaNula(String tabla[][], int cantSimbolos) {
 		this.tabla = tabla;
 		this.cantSimbolos = cantSimbolos;
-		this.probabilidadesReales = new double[this.cantSimbolos];
+		this.probabilidadesExperimental = new double[this.cantSimbolos];
 	}
 
 	@Override
@@ -40,7 +41,7 @@ public class FuenteDeMemoriaNula extends Fuente {
 		// A medida que n crece, este vector tiende a las probabilidades teóricas
 		// almacenadas en la tabla.
 		for (i = 0; i < this.cantSimbolos; i++)
-			this.probabilidadesReales[i] = (double) Collections.frequency(this.secuencia, this.tabla[i][0])
+			this.probabilidadesExperimental[i] = (double) Collections.frequency(this.secuencia, this.tabla[i][0])
 					/ this.secuencia.size();
 	}
 
@@ -56,7 +57,7 @@ public class FuenteDeMemoriaNula extends Fuente {
 		System.out.println("\nEntropia: " + this.getEntropia());
 	}
 
-	public void generarCantidadInfo() {
+	public void generarCantInfo() {
 		int i;
 		double prob;
 		this.cantInfo = new double[this.cantSimbolos];
@@ -66,6 +67,21 @@ public class FuenteDeMemoriaNula extends Fuente {
 				this.cantInfo[i] = Math.log(1.0 / prob) / Math.log(2);
 			else
 				this.cantInfo[i] = 0;
+		}
+	}
+	
+	// PRE: Se ejecutó el método generarSecuencia()
+	// Genera un vector con la cantidad de información de cada símbolo mediante sus probabilidades reales, calculadas a partir de la secuencia generada.
+	public void generarCantInfoExperimental() {
+		int i;
+		double prob;
+		this.cantInfoExperimental = new double[this.cantSimbolos];
+		for (i = 0; i < this.cantSimbolos; i++) {
+			prob = this.probabilidadesExperimental[i];
+			if (prob != 0)
+				this.cantInfoExperimental[i] = Math.log(1.0 / prob) / Math.log(2);
+			else
+				this.cantInfoExperimental[i] = 0;
 		}
 	}
 
@@ -78,11 +94,63 @@ public class FuenteDeMemoriaNula extends Fuente {
 			sumatoria += this.cantInfo[i] * Double.parseDouble(tabla[i][1]);
 		return sumatoria;
 	}
+	
+	@Override
+	public double getEntropiaExperimental() {
+		int i;
+		double sumatoria = 0;
+		for (i = 0; i < this.cantSimbolos; i++)
+			sumatoria += this.cantInfoExperimental[i] * this.probabilidadesExperimental[i];
+		return sumatoria;
+	}
 
 	public void mostrarTabla() {
 		int i;
 		System.out.println("Símbolo:\tProbabilidad:\n");
 		for (i = 0; i < this.cantSimbolos; i++)
 			System.out.println(this.tabla[i][0] + "\t" + this.tabla[i][1] + "\n");
+	}
+	
+	// PRE: Se ejecutó el método generarCantInfo.
+	public String getCantInfo() {
+		int i;
+		DecimalFormat df = new DecimalFormat("#.###");
+		String retorno = "{";
+		retorno += df.format(this.cantInfo[0]);
+		for (i=1;i<this.cantSimbolos;i++)
+			retorno += "; " + df.format(this.cantInfo[i]);
+		retorno += "}";
+		return retorno;
+	}
+	
+	// PRE: Se ejecutó el método generarCantInfoExperimental.
+	public String getCantInfoExperimental() {
+		int i;
+		DecimalFormat df = new DecimalFormat("#.###");
+		String retorno = "{";
+		retorno += df.format(this.cantInfoExperimental[0]);
+		for (i=1;i<this.cantSimbolos;i++)
+			retorno += "; " + df.format(this.cantInfoExperimental[i]);
+		retorno += "}";
+		return retorno;
+	}
+	
+	public String getFuente()
+	{
+		int i;
+		String retorno = "Símbolo:\tProbabilidad:\n";
+		for (i=0;i<this.cantSimbolos;i++)
+			retorno += this.tabla[i][0] + "\t" + this.tabla[i][1] + "\n";
+		return retorno;
+	}
+	
+	// PRE: Se ejecutó el método generarSecuencia.
+	public String getFuenteExperimental()
+	{
+		int i;
+		String retorno = "Símbolo:\tProbabilidad:\n";
+		for (i=0;i<this.cantSimbolos;i++)
+			retorno += this.tabla[i][0] + "\t" + this.probabilidadesExperimental[i] + "\n";
+		return retorno;
 	}
 }

@@ -93,4 +93,13 @@ public class FuenteDeMemoriaNula2 {
 	public boolean esCompacto() {
 		return this.getEntropia() <= this.getLongitudMedia();
 	}
+	
+	public String getFuente()
+	{
+		int i;
+		String retorno = "Símbolo:\tCódigo:\tProbabilidad:\n";
+		for (i=0;i<this.cantSimbolos;i++)
+			retorno += this.tabla[i][0] + "\t" + this.tabla[i][1] + "\t" + this.tabla[i][2] + "\n";
+		return retorno;
+	}
 }

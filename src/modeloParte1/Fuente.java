@@ -18,4 +18,6 @@ public abstract class Fuente {
 	public abstract void mostrarDatos();
 
 	public abstract double getEntropia();
+	
+	public abstract double getEntropiaExperimental();
 }
