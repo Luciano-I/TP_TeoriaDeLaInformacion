@@ -320,7 +320,7 @@ public class VentanaMemoriaNula extends JFrame implements ActionListener, KeyLis
 		this.fuenteCorrecta = false;
 		this.elementos2Correcto = false;
 		this.setMinimumSize(new Dimension(1024, 500));
-		this.setResizable(false);
+		this.setResizable(true);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setVisible(true);
 	}

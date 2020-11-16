@@ -239,7 +239,7 @@ public class VentanaParte2 extends JFrame implements ActionListener, KeyListener
 
 		this.fuenteCorrecta = false;
 		this.setMinimumSize(new Dimension(1024, 500));
-		this.setResizable(false);
+		this.setResizable(true);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setVisible(true);
 	}
