@@ -4,6 +4,6 @@ bin
 .idea
 TP1.iml
 classes
-TP2\.idea
-TP2\TP2.iml
-TP2\out
+TP2/.idea
+TP2/TP2.iml
+TP2/out
