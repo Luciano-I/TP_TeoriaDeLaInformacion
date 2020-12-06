@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 
 public class FuenteDeMemoriaNula {
     private ArrayList<Entrada> tabla = new ArrayList<Entrada>();
-    private double cantInfo[], cantInfoExperimental[], probabilidadesExperimental[];
-
+    private double cantInfo[];
+    private double[] probAcum;
     public FuenteDeMemoriaNula(ArrayList<Entrada> entradas) {
         this.tabla = entradas;
     }
@@ -148,8 +148,68 @@ public class FuenteDeMemoriaNula {
         return  (1 - this.getRendimiento());
     }
 
-    public void ShannonFano(){
+    private int getK(int inicio, int fin)
+    {
+        int k = inicio;
+        double probRango = this.probAcum[fin] - this.probAcum[inicio],
+                probMax = probRango/2.0 + this.probAcum[inicio];
+        while (k<=fin && probAcum[k] < probMax)
+            k++;
+        return k;
+    }
 
+    public void mostrarAcumuladas()
+    {
+        for (int i=0;i<this.probAcum.length;i++)
+            System.out.println("Probabilidad Acum: " + this.probAcum[i] + ". Indice:" + i);
+    }
+
+    public void generarProbAcumSF()
+    {
+        int i=0;
+        double acum = 0;
+        //Para invertir el orden del ArrayList
+        Collections.reverse(this.tabla);
+        this.mostrarTabla();
+        this.probAcum = new double[this.tabla.size()];
+        for (Entrada elemento: this.tabla)
+        {
+            acum += elemento.getProbabilidad();
+            this.probAcum[i] = acum;
+            i++;
+        }
+    }
+
+    public void ShannonFano(){
+        this.generarProbAcumSF();
+        this.recShannonFano(0,this.tabla.size()-1);
+    }
+
+
+
+    public void recShannonFano(int inicio, int fin){
+
+        if (fin - inicio>1)
+        {
+            int k,i;
+            Entrada elemento;
+            k = this.getK(inicio,fin);
+            if (k==fin)
+                k--;
+            for (i=inicio;i<=k;i++)
+            {
+                elemento = this.tabla.get(i);
+                elemento.setCodigo(elemento.getCodigo() + "0");
+            }
+            for (i=k+1;i<=fin;i++)
+            {
+                elemento = this.tabla.get(i);
+                elemento.setCodigo(elemento.getCodigo() + "1");
+            }
+
+            this.recShannonFano(inicio,k);
+            this.recShannonFano(k+1,fin);
+        }
     }
     /*
     // PRE: Se ejecutaron los métodos generarSecuencia() y generarCantidadInfo().
