@@ -5,3 +5,6 @@ TP2/bin
 TP2/.classpath
 TP2/.project
 .gitignore
+TP2/.idea
+TP2/TP2.iml
+TP2/out
