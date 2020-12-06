@@ -1,6 +1,7 @@
-bin
-TP1/.idea
-TP1/classes
-TP2/.idea
-TP2/TP2.iml
-TP2/out
+TP1/bin
+TP1/.classpath
+TP1/.project
+TP2/bin
+TP2/.classpath
+TP2/.project
+.gitignore
