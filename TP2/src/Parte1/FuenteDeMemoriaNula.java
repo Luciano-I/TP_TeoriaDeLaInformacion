@@ -1,3 +1,4 @@
+package Parte1;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -6,8 +7,9 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class FuenteDeMemoriaNula {
-	private ArrayList<Entrada> tabla = new ArrayList<Entrada>();
+	private ArrayList<Entrada> tabla ,textoEntradas;
 	private double cantInfo[];
+	private String textoCodificado,textoRLC;
 	private double[] probAcum;
 
 	public FuenteDeMemoriaNula(ArrayList<Entrada> entradas) {
@@ -16,64 +18,34 @@ public class FuenteDeMemoriaNula {
 
 	public FuenteDeMemoriaNula(String direccion) {
 		try {
-			String cadena;
+			String texto;
+			Entrada aux;
 			char caracter;
-			HashMap<Character, Integer> ocurrencias = new HashMap<Character, Integer>();
+			HashMap<Character, Entrada> caracteresTexto = new HashMap<Character, Entrada>();
 			int cont = 0;
-			/*
-			FileReader reader = new FileReader(direccion);
-			BufferedReader buffer = new BufferedReader(reader);
-			while ((cadena = buffer.readLine()) != null) {
-				char caracter;
-				for (int i = 0; i < cadena.length(); i++) {
-					cont++;
-					caracter = cadena.charAt(i);
-					if (!ocurrencias.containsKey(cadena.charAt(i)))
-						ocurrencias.put(caracter, 1);
-					else
-						ocurrencias.put(caracter, ocurrencias.get(caracter) + 1);
-				}
-			}
-			*/
-			//CAMBIO: NUEVA MANERA DE LEER EL ARCHIVO BYTE A BYTE (INCLUYE \n y \t)
-			//En Windows cada salto de linea cuenta por 2: \n \r
-			cadena = new String(Files.readAllBytes(Paths.get(direccion)));
-			for (int i = 0; i < cadena.length(); i++) {
+			this.tabla = new ArrayList<Entrada>();
+			texto = new String(Files.readAllBytes(Paths.get(direccion)));
+			this.textoEntradas = new ArrayList<Entrada>();
+			for (int i = 0; i < texto.length(); i++) {
 				cont++;
-				caracter = cadena.charAt(i);
-				if (!ocurrencias.containsKey(cadena.charAt(i)))
-					ocurrencias.put(caracter, 1);
-				else
-					ocurrencias.put(caracter, ocurrencias.get(caracter) + 1);
+				caracter = texto.charAt(i);
+				if (!caracteresTexto.containsKey(caracter)) {
+					aux = new Entrada(caracter + "",1);
+					this.tabla.add(aux);
+					caracteresTexto.put(caracter, aux);
+				}
+					else
+						caracteresTexto.get(caracter).setOcurrencia();
+					this.textoEntradas.add(caracteresTexto.get(caracter));
 			}
 
 			System.out.println("Cantidad de caracteres: " + cont);
 			System.out.println("\n\n\n\n\n\n\n\n\n\n");
 
-			/*
-			Map<Character, Integer> ocurrenciasOrdenadas = ocurrencias.entrySet()
-			        .stream()
-			        .sorted(Map.Entry.comparingByValue())
-			        .collect(Collectors.toMap(
-			                Map.Entry::getKey,
-			                Map.Entry::getValue,
-			                (viejo, nuevo) -> viejo, LinkedHashMap::new));
-			Iterator itordenado = ocurrenciasOrdenadas.entrySet().iterator();
-			System.out.println("\n\n");                    
-			double aux;
-			while (itordenado.hasNext()) {
-			    Map.Entry<Character, Integer> par = (Map.Entry<Character, Integer>) itordenado.next();
-			    this.tabla.add(new Entrada(par.getKey() + "", (double) par.getValue() / cont));
-			}
-			*/
-			//CAMBIO: Nueva manera de generar la tabla ordenada
-			this.tabla = new ArrayList<Entrada>();
-			Iterator it = ocurrencias.entrySet().iterator();
-			while (it.hasNext()) {
-				Map.Entry<Character, Integer> entrada = (Map.Entry<Character, Integer>) it.next();
-				this.tabla.add(new Entrada("" + entrada.getKey(), (double) entrada.getValue() / cont));
-			}
+			for (Entrada elemento: this.tabla)
+				elemento.setProbabilidad(cont);
 			Collections.sort(this.tabla);
+
 		} catch (FileNotFoundException e) {
 			System.out.println("No se encontró el archivo.");
 		} catch (IOException e) {
@@ -81,9 +53,11 @@ public class FuenteDeMemoriaNula {
 		}
 	}
 
+
+
 	public void mostrarTabla() {
 		for (Entrada aux : this.tabla) {
-			System.out.println(aux.getSimbolo() + "|" + aux.getCodigo() + "|" + aux.getProbabilidad());
+			System.out.println(aux.getSimbolo() + "|" + aux.getCodigo() + "|" + aux.getProbabilidad()+ "|" + aux.getRLC());
 		}
 	}
 
@@ -105,7 +79,7 @@ public class FuenteDeMemoriaNula {
 			this.huffman();
 
 			/*
-			Iterator<Entrada> it = sigTabla.iterator();
+			Iterator<Parte1.Entrada> it = sigTabla.iterator();
 			boolean encontro = false;
 			while (it.hasNext() && !encontro) {
 				aux3 = it.next();
@@ -123,8 +97,8 @@ public class FuenteDeMemoriaNula {
 			//CAMBIO: Ya no es necesario clonar
 			/*
 			this.tabla.clear();
-			for (Entrada elemento : sigTabla)
-				this.tabla.add((Entrada) elemento.clone());
+			for (Parte1.Entrada elemento : sigTabla)
+				this.tabla.add((Parte1.Entrada) elemento.clone());
 			*/
 		}
 	}
@@ -214,6 +188,30 @@ public class FuenteDeMemoriaNula {
 	public double getRedundancia() {
 		return (1 - this.getRendimiento());
 	}
+
+	private void generarRLC()
+	{
+		for(Entrada elemento: this.tabla)
+			elemento.setRLC();
+	}
+	//PRE: Ejecutar Huffman o Shanon-Fano
+	public void generarTextoCodigo()
+	{
+		this.generarRLC();
+		this.textoRLC = "";
+		this.textoCodificado = "";
+		for(Entrada elemento: this.textoEntradas) {
+			this.textoCodificado += elemento.getCodigo();
+			this.textoRLC += elemento.getRLC();
+		}
+	}
+
+	public double getTasaCompresion()
+	{
+		return (double)this.textoCodificado.length() / this.textoRLC.length();
+	}
+
+
 	/*
 	// PRE: Se ejecutaron los métodos generarSecuencia() y generarCantidadInfo().
 	@Override
@@ -226,14 +224,14 @@ public class FuenteDeMemoriaNula {
 	    }
 	    System.out.println("\nEntropia: " + this.getEntropia());
 	}
-	
+
 	public void mostrarTabla() {
 	    int i;
 	    System.out.println("Símbolo:\tProbabilidad:\n");
 	    for (i = 0; i < this.cantSimbolos; i++)
 	        System.out.println(this.tabla[i][0] + "\t" + this.tabla[i][1] + "\n");
 	}
-	
+
 	// PRE: Se ejecutó el método generarCantInfo.
 	public String getCantInfo() {
 	    int i;
@@ -245,7 +243,7 @@ public class FuenteDeMemoriaNula {
 	    retorno += "}";
 	    return retorno;
 	}
-	
+
 	public String getFuente()
 	{
 	    int i;

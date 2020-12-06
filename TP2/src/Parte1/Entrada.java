@@ -1,12 +1,18 @@
+package Parte1;
+
+import java.util.ArrayList;
+
 public class Entrada implements Cloneable, Comparable<Entrada> {
     private String simbolo;
     private String codigo;
     private double probabilidad;
+    private ArrayList<Integer> RLC;
 
     public Entrada(String simbolo, double probabilidad) {
         this.simbolo = simbolo;
         this.probabilidad = probabilidad;
         this.codigo = "";
+        this.RLC = new ArrayList<Integer>();
     }
 
     public String getSimbolo() {
@@ -25,6 +31,10 @@ public class Entrada implements Cloneable, Comparable<Entrada> {
         this.codigo = cod;
     }
 
+    public void setProbabilidad(int cant)
+    {
+        this.probabilidad/=cant;
+    }
     @Override
     public Object clone() {
         try {
@@ -32,6 +42,11 @@ public class Entrada implements Cloneable, Comparable<Entrada> {
         } catch (CloneNotSupportedException e) {
             return null;
         }
+    }
+
+    public void setOcurrencia()
+    {
+        this.probabilidad++;
     }
 
     @Override
@@ -47,4 +62,33 @@ public class Entrada implements Cloneable, Comparable<Entrada> {
         else
             return -1;
     }
+    public void setRLC()
+    {
+        int i =0,cont;
+        while (i<this.codigo.length())
+        {
+            cont = 0;
+            while (i<this.codigo.length() && this.codigo.charAt(i)=='0') {
+                cont++;
+                i++;
+            }
+                this.RLC.add(cont);
+            cont = 0;
+            while (i<this.codigo.length() && this.codigo.charAt(i)=='1'){
+                cont++;
+                i++;
+            }
+            if (cont!=0)
+                this.RLC.add(cont);
+
+        }
+    }
+    public String getRLC()
+    {
+        String retorno = "";
+        for(Integer elemento:this.RLC)
+            retorno += elemento + "";
+        return retorno;
+    }
+
 }
