@@ -149,8 +149,8 @@ public class FuenteDeMemoriaNula {
     private int getK(int inicio, int fin)
     {
         int k = inicio;
-        double probRango = this.probAcum[fin] - this.probAcum[inicio],
-                probMax = probRango/2.0 + this.probAcum[inicio];
+        double probRango = this.probAcum[fin] - this.probAcum[inicio-1],
+                probMax = probRango/2.0 + this.probAcum[inicio-1];
         while (k<=fin && probAcum[k] < probMax)
             k++;
         return k;
@@ -164,22 +164,24 @@ public class FuenteDeMemoriaNula {
 
     public void generarProbAcumSF()
     {
-        int i=0;
+        int i=1;
         double acum = 0;
         //Para invertir el orden del ArrayList
         Collections.reverse(this.tabla);
-        this.probAcum = new double[this.tabla.size()];
+        this.probAcum = new double[this.tabla.size()+1];
         for (Entrada elemento: this.tabla)
         {
             acum += elemento.getProbabilidad();
             this.probAcum[i] = acum;
+            System.out.println(acum);
             i++;
         }
+
     }
 
     public void ShannonFano(){
         this.generarProbAcumSF();
-        this.recShannonFano(0,this.tabla.size()-1);
+        this.recShannonFano(1,this.tabla.size());
     }
 
 
@@ -192,15 +194,18 @@ public class FuenteDeMemoriaNula {
             k = this.getK(inicio,fin);
             if (k==fin)
                 k--;
-            for (i=inicio;i<=k;i++)
+            System.out.println(inicio + " " + fin + " " + k);
+            for (i=inicio-1;i<k;i++)
             {
                 elemento = this.tabla.get(i);
                 elemento.setCodigo(elemento.getCodigo() + "0");
+                System.out.println("1er for" + elemento.getSimbolo() + " " + elemento.getCodigo());
             }
-            for (i=k+1;i<=fin;i++)
+            for (i=k;i<fin;i++)
             {
                 elemento = this.tabla.get(i);
                 elemento.setCodigo(elemento.getCodigo() + "1");
+                System.out.println("2do for" + elemento.getSimbolo() + " " + elemento.getCodigo());
             }
 
             this.recShannonFano(inicio,k);
