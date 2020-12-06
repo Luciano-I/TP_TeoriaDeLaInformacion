@@ -1,9 +1,6 @@
 bin
-.classpath
-.project
-.idea
-TP1.iml
-classes
+TP1/.idea
+TP1/classes
 TP2/.idea
 TP2/TP2.iml
 TP2/out
