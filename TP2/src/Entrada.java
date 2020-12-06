@@ -37,10 +37,11 @@ public class Entrada implements Cloneable, Comparable<Entrada> {
     @Override
     public int compareTo(Entrada o) {
         if (o != null)
-            if (this.probabilidad < o.probabilidad)
-                return -1;
-            else if (this.probabilidad > o.probabilidad)
-                return 1;
+            if (o != this)
+                if (this.probabilidad < o.probabilidad)
+                    return -1;
+                else
+                    return 1;
             else
                 return 0;
         else

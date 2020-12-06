@@ -60,10 +60,8 @@ public class FuenteDeMemoriaNula {
 
 
     public void mostrarTabla() {
-        Iterator<Entrada> it = this.tabla.iterator();
-        Entrada aux;
-        while (it.hasNext()) {
-            aux = it.next();
+        for (Entrada aux:this.tabla)
+        {
             System.out.println(aux.getSimbolo() + "|" + aux.getCodigo() + "|" + aux.getProbabilidad());
         }
     }
@@ -170,7 +168,6 @@ public class FuenteDeMemoriaNula {
         double acum = 0;
         //Para invertir el orden del ArrayList
         Collections.reverse(this.tabla);
-        this.mostrarTabla();
         this.probAcum = new double[this.tabla.size()];
         for (Entrada elemento: this.tabla)
         {
@@ -186,10 +183,9 @@ public class FuenteDeMemoriaNula {
     }
 
 
-
     public void recShannonFano(int inicio, int fin){
 
-        if (fin - inicio>1)
+        if (inicio!=fin)
         {
             int k,i;
             Entrada elemento;

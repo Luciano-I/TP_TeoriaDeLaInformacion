@@ -12,8 +12,7 @@ public class Prueba {
         System.out.println("Redundancia" + fuente.getRedundancia());
 
          */
-        fuente.generarProbAcumSF();
         fuente.ShannonFano();
-       // fuente.mostrarTabla();
+        fuente.mostrarTabla();
     }
 }
