@@ -57,6 +57,7 @@ public class FuenteTexto {
 		}
 	}
 
+	//PRE: La fuente de texto contiene al menos dos símbolos distintos.
 	//PRE: Las probabilidades de la tabla están ordenadas de manera ascendente.
 	public void huffman() {
 		if (this.tabla.size() == 2) {
@@ -153,6 +154,7 @@ public class FuenteTexto {
 		return sumatoria;
 	}
 
+	//PRE: Ejecutar Huffman o Shanon-Fano
 	public double getLongitudMedia() {
 		double retorno = 0;
 		for (Entrada elemento : this.tabla)

@@ -371,7 +371,7 @@ public class VentanaMemoriaNula extends JFrame implements ActionListener, KeyLis
 		}
 	}
 
-	// Genera la fuente con los datos ingresado y realiza todos los cálculos
+	// Genera la fuente con los datos ingresado y realiza todos los cï¿½lculos
 	// necesarios
 	public void generarDatosFuente(int n, String tabla[][]) {
 		this.fuente = new FuenteDeMemoriaNula(tabla, this.cantSimbolos);
@@ -391,7 +391,7 @@ public class VentanaMemoriaNula extends JFrame implements ActionListener, KeyLis
 	public void inicializarPanelFuente() {
 		int i, j;
 
-		// Crea un layout en base a la cantidad de símbolos
+		// Crea un layout en base a la cantidad de sï¿½mbolos
 		GridLayout layout = new GridLayout(this.cantSimbolos + 1, 2);
 		layout.setVgap(100 / this.cantSimbolos);
 		layout.setHgap(50);
@@ -399,7 +399,7 @@ public class VentanaMemoriaNula extends JFrame implements ActionListener, KeyLis
 
 		// Crea la fuente a llenar por el usuario
 		this.matrizFuente = new JTextField[this.cantSimbolos + 1][2];
-		this.panelFuente.add(new JLabel("Símbolo:"));
+		this.panelFuente.add(new JLabel("Sï¿½mbolo:"));
 		this.panelFuente.add(new JLabel("Probabilidad:"));
 		for (i = 0; i < this.cantSimbolos; i++) {
 			this.matrizFuente[i][0] = new JTextField();
@@ -425,7 +425,7 @@ public class VentanaMemoriaNula extends JFrame implements ActionListener, KeyLis
 	public void keyReleased(KeyEvent arg0) {
 		JTextField field = (JTextField) arg0.getSource();
 		if (field.getName().equals("CANTSIMBOLOS")) {
-			// Valida la cantidad de símbolos ingresada en la primera pantalla
+			// Valida la cantidad de sï¿½mbolos ingresada en la primera pantalla
 			String textoCantSimbolos = this.fieldCantSimbolos.getText();
 			if (!textoCantSimbolos.isBlank() && textoCantSimbolos.matches("[0-9]+")
 					&& Integer.parseInt(textoCantSimbolos) > 1 && Integer.parseInt(textoCantSimbolos) < 8)
@@ -465,7 +465,7 @@ public class VentanaMemoriaNula extends JFrame implements ActionListener, KeyLis
 						|| Double.parseDouble(textoField) < 0) {
 					this.fuenteCorrecta = false;
 				} else {
-					// Chequea si la columna de probabilidades es válida.
+					// Chequea si la columna de probabilidades es vï¿½lida.
 					String elemento;
 					suma = 0;
 					i = 0;
@@ -494,3 +494,4 @@ public class VentanaMemoriaNula extends JFrame implements ActionListener, KeyLis
 	}
 
 }
+
