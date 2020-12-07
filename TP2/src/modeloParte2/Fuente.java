@@ -1,4 +1,4 @@
-package Parte2;
+package modeloParte2;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -104,6 +104,19 @@ public class Fuente {
 		return sumatoria;
 	}
 
+	public double getEntropiaSalidaExperimental() {
+		int i, j;
+		double sumatoria = 0;
+		double pB;
+		for (j = 0; j < this.cantSimbolosSalida; j++) {
+			pB = 0;
+			for (i = 0; i < this.cantSimbolosEntrada; i++)
+				pB += this.tablaCanalReal[i][j] * this.probEntradaReal[i];
+			sumatoria += -pB * Math.log(pB) / Math.log(2);
+		}
+		return sumatoria;
+	}
+
 	public void enviarMensaje() {
 		double probAcum[][] = new double[this.cantSimbolosEntrada][this.cantSimbolosSalida];
 		int i, j;
@@ -148,23 +161,8 @@ public class Fuente {
 		return retorno;
 	}
 
-	//PRE: Se ejecutó el método enviarMensaje
-	public void recrearTablaCanal() {
-		int i, j, cantidad;
-		int cont[] = new int[this.cantSimbolosEntrada];
-		this.tablaCanalReal = new double[this.cantSimbolosEntrada][this.cantSimbolosSalida];
-		cantidad = this.mensajeEntrada.size();
-		for (i = 0; i < cantidad; i++) {
-			this.tablaCanalReal[this.mensajeEntrada.get(i)][this.mensajeSalida.get(i)]++;
-			cont[this.mensajeEntrada.get(i)]++;
-		}
-		for (i = 0; i < this.cantSimbolosEntrada; i++)
-			for (j = 0; j < this.cantSimbolosSalida; j++)
-				this.tablaCanalReal[i][j] /= cont[i];
-	}
-
 	//PRE: Se ejecutó el método recrearMatrizCanal.
-	public double getEquivocacionExperimental() {
+	public double getEquivocacionABExperimental() {
 		double retorno = 0;
 		int i, j, k;
 		double pADadoB;
@@ -180,15 +178,49 @@ public class Fuente {
 			}
 		return retorno;
 	}
-	
-	public double getInformacionMutuaTeorica()
-	{
+
+	//PRE: Se ejecutó el método recrearMatrizCanal.
+	public double getEquivocacionBAExperimental() {
+		double retorno = 0;
+		int i, j, k;
+		double pB;
+		for (i = 0; i < this.cantSimbolosEntrada; i++)
+			for (j = 0; j < this.cantSimbolosSalida; j++) {
+				pB = 0;
+				for (k = 0; k < this.cantSimbolosEntrada; k++)
+					pB += this.tablaCanalReal[k][j];
+				if (this.tablaCanalReal[i][j] > 0)
+					retorno += this.tablaCanalReal[i][j] * this.probEntradaReal[i]
+							* Math.log(1.0 / this.tablaCanalReal[i][j]) / Math.log(2);
+			}
+		return retorno;
+	}
+
+	//PRE: Se ejecutó el método enviarMensaje
+	public void recrearTablaCanal() {
+		int i, j, cantidad;
+		int cont[] = new int[this.cantSimbolosEntrada];
+		this.tablaCanalReal = new double[this.cantSimbolosEntrada][this.cantSimbolosSalida];
+		cantidad = this.mensajeEntrada.size();
+		for (i = 0; i < cantidad; i++) {
+			this.tablaCanalReal[this.mensajeEntrada.get(i)][this.mensajeSalida.get(i)]++;
+			cont[this.mensajeEntrada.get(i)]++;
+		}
+		for (i = 0; i < this.cantSimbolosEntrada; i++)
+			for (j = 0; j < this.cantSimbolosSalida; j++)
+				this.tablaCanalReal[i][j] /= cont[i];
+	}
+
+	public double getInformacionMutuaTeorica() {
 		return this.getEntropiaEntradaTeorica() - this.getEquivocacionTeorica();
 	}
-	
-	public double getInformacionMutuaExperimental()
-	{
-		return this.getEntropiaEntradaExperimental() - this.getEquivocacionExperimental();
+
+	public double getInformacionMutuaABExperimental() {
+		return this.getEntropiaEntradaExperimental() - this.getEquivocacionABExperimental();
+	}
+
+	public double getInformacionMutuaBAExperimental() {
+		return this.getEntropiaSalidaExperimental() - this.getEquivocacionBAExperimental();
 	}
 
 	/*

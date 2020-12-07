@@ -1,4 +1,4 @@
-package Parte1;
+package modeloParte1;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -6,44 +6,41 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class FuenteDeMemoriaNula {
-	private ArrayList<Entrada> tabla ,textoEntradas;
+public class FuenteTexto {
+	private ArrayList<Entrada> tabla, textoEntradas;
 	private double cantInfo[];
-	private String textoCodificado,textoRLC;
+	private String textoCodificado, textoRLC;
 	private double[] probAcum;
+	private String texto;
+	private int contadorCaracteres;
 
-	public FuenteDeMemoriaNula(ArrayList<Entrada> entradas) {
+	public FuenteTexto(ArrayList<Entrada> entradas) {
 		this.tabla = entradas;
 	}
 
-	public FuenteDeMemoriaNula(String direccion) {
+	public FuenteTexto(String direccion) {
 		try {
-			String texto;
 			Entrada aux;
 			char caracter;
 			HashMap<Character, Entrada> caracteresTexto = new HashMap<Character, Entrada>();
-			int cont = 0;
+			this.contadorCaracteres = 0;
 			this.tabla = new ArrayList<Entrada>();
-			texto = new String(Files.readAllBytes(Paths.get(direccion)));
+			this.texto = new String(Files.readAllBytes(Paths.get(direccion)));
 			this.textoEntradas = new ArrayList<Entrada>();
-			for (int i = 0; i < texto.length(); i++) {
-				cont++;
-				caracter = texto.charAt(i);
+			for (int i = 0; i < this.texto.length(); i++) {
+				this.contadorCaracteres++;
+				caracter = this.texto.charAt(i);
 				if (!caracteresTexto.containsKey(caracter)) {
-					aux = new Entrada(caracter + "",1);
+					aux = new Entrada(caracter + "", 1);
 					this.tabla.add(aux);
 					caracteresTexto.put(caracter, aux);
-				}
-					else
-						caracteresTexto.get(caracter).setOcurrencia();
-					this.textoEntradas.add(caracteresTexto.get(caracter));
+				} else
+					caracteresTexto.get(caracter).setOcurrencia();
+				this.textoEntradas.add(caracteresTexto.get(caracter));
 			}
 
-			System.out.println("Cantidad de caracteres: " + cont);
-			System.out.println("\n\n\n\n\n\n\n\n\n\n");
-
-			for (Entrada elemento: this.tabla)
-				elemento.setProbabilidad(cont);
+			for (Entrada elemento : this.tabla)
+				elemento.setProbabilidad(this.contadorCaracteres);
 			Collections.sort(this.tabla);
 
 		} catch (FileNotFoundException e) {
@@ -53,11 +50,10 @@ public class FuenteDeMemoriaNula {
 		}
 	}
 
-
-
 	public void mostrarTabla() {
 		for (Entrada aux : this.tabla) {
-			System.out.println(aux.getSimbolo() + "|" + aux.getCodigo() + "|" + aux.getProbabilidad()+ "|" + aux.getRLC());
+			System.out.println(
+					aux.getSimbolo() + "|" + aux.getCodigo() + "|" + aux.getProbabilidad() + "|" + aux.getRLC());
 		}
 	}
 
@@ -67,7 +63,6 @@ public class FuenteDeMemoriaNula {
 			this.tabla.get(0).setCodigo("0");
 			this.tabla.get(1).setCodigo("1");
 		} else {
-			//CAMBIO: Ya no se usa una sigFuente ni una sigTabla
 			Entrada aux1, aux2, aux3 = null;
 			aux1 = this.tabla.get(0);
 			this.tabla.remove(0);
@@ -78,28 +73,12 @@ public class FuenteDeMemoriaNula {
 			Collections.sort(this.tabla);
 			this.huffman();
 
-			/*
-			Iterator<Parte1.Entrada> it = sigTabla.iterator();
-			boolean encontro = false;
-			while (it.hasNext() && !encontro) {
-				aux3 = it.next();
-				if (aux3.getSimbolo().contains(aux1.getSimbolo()))
-					encontro = true;
-			}
-			*/
-			//CAMBIO: Generando aux3 arriba no es necesario buscarlo. Misma referencia.
 			aux1.setCodigo(aux3.getCodigo() + "0");
 			aux2.setCodigo(aux3.getCodigo() + "1");
 			this.tabla.remove(aux3);
 			this.tabla.add(aux1);
 			this.tabla.add(aux2);
 			Collections.sort(this.tabla);
-			//CAMBIO: Ya no es necesario clonar
-			/*
-			this.tabla.clear();
-			for (Parte1.Entrada elemento : sigTabla)
-				this.tabla.add((Parte1.Entrada) elemento.clone());
-			*/
 		}
 	}
 
@@ -108,7 +87,7 @@ public class FuenteDeMemoriaNula {
 		this.recShannonFano(1, this.tabla.size());
 	}
 
-	public void generarProbAcumSF() {
+	private void generarProbAcumSF() {
 		int i = 1;
 		double acum = 0;
 		//Para invertir el orden del ArrayList
@@ -189,28 +168,37 @@ public class FuenteDeMemoriaNula {
 		return (1 - this.getRendimiento());
 	}
 
-	private void generarRLC()
-	{
-		for(Entrada elemento: this.tabla)
+	private void generarRLC() {
+		for (Entrada elemento : this.tabla)
 			elemento.setRLC();
 	}
+
 	//PRE: Ejecutar Huffman o Shanon-Fano
-	public void generarTextoCodigo()
-	{
+	public void generarTextoCodigo() {
 		this.generarRLC();
 		this.textoRLC = "";
 		this.textoCodificado = "";
-		for(Entrada elemento: this.textoEntradas) {
+		for (Entrada elemento : this.textoEntradas) {
 			this.textoCodificado += elemento.getCodigo();
 			this.textoRLC += elemento.getRLC();
 		}
 	}
 
-	public double getTasaCompresion()
-	{
-		return (double)this.textoCodificado.length() / this.textoRLC.length();
+	public double getTasaCompresion() {
+		return (double) this.textoCodificado.length() / this.textoRLC.length();
 	}
 
+	public String getStringOriginal() {
+		return this.texto;
+	}
+
+	public String getStringCodigo() {
+		return this.textoCodificado;
+	}
+
+	public String getStringRLC() {
+		return this.textoRLC;
+	}
 
 	/*
 	// PRE: Se ejecutaron los métodos generarSecuencia() y generarCantidadInfo().
@@ -224,14 +212,14 @@ public class FuenteDeMemoriaNula {
 	    }
 	    System.out.println("\nEntropia: " + this.getEntropia());
 	}
-
+	
 	public void mostrarTabla() {
 	    int i;
 	    System.out.println("Símbolo:\tProbabilidad:\n");
 	    for (i = 0; i < this.cantSimbolos; i++)
 	        System.out.println(this.tabla[i][0] + "\t" + this.tabla[i][1] + "\n");
 	}
-
+	
 	// PRE: Se ejecutó el método generarCantInfo.
 	public String getCantInfo() {
 	    int i;
@@ -243,7 +231,7 @@ public class FuenteDeMemoriaNula {
 	    retorno += "}";
 	    return retorno;
 	}
-
+	
 	public String getFuente()
 	{
 	    int i;
