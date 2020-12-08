@@ -43,7 +43,7 @@ public class VentanaParte1 extends JFrame implements ActionListener {
 		JPanel cardInicio = new JPanel();
 		switchEstado.add(cardInicio, "INICIO");
 		cardInicio.setLayout(new GridLayout(0, 1, 0, 0));
-		
+
 		JPanel panel_3 = new JPanel();
 		panel_3.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		cardInicio.add(panel_3);
@@ -58,7 +58,7 @@ public class VentanaParte1 extends JFrame implements ActionListener {
 		botonElegir.addActionListener(this);
 		botonElegir.setActionCommand("ARCHIVO");
 		panelInicio.add(botonElegir);
-		
+
 		JPanel panel_4 = new JPanel();
 		panel_4.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		panelInicio.add(panel_4);
@@ -89,109 +89,109 @@ public class VentanaParte1 extends JFrame implements ActionListener {
 		JPanel cardResultados = new JPanel();
 		switchEstado.add(cardResultados, "RESULTADOS");
 		cardResultados.setLayout(new BorderLayout(0, 5));
-		
+
 		JPanel panelResultados = new JPanel();
 		cardResultados.add(panelResultados);
 		panelResultados.setLayout(new BorderLayout(0, 10));
-		
+
 		JPanel panelTextos = new JPanel();
 		panelResultados.add(panelTextos, BorderLayout.CENTER);
 		panelTextos.setLayout(new GridLayout(0, 3, 10, 0));
-		
+
 		JPanel panel = new JPanel();
 		panel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panelTextos.add(panel);
 		panel.setLayout(new GridLayout(0, 1, 0, 0));
-		
+
 		JScrollPane scrollOriginal = new JScrollPane();
 		panel.add(scrollOriginal);
-		
+
 		this.textoOriginal = new JTextArea();
 		textoOriginal.setLineWrap(true);
 		textoOriginal.setEditable(false);
 		scrollOriginal.setViewportView(this.textoOriginal);
-		
+
 		JLabel labelOriginal = new JLabel("Texto original");
 		labelOriginal.setFont(new Font("Tahoma", Font.BOLD, 12));
 		scrollOriginal.setColumnHeaderView(labelOriginal);
-		
+
 		JPanel panel_1 = new JPanel();
 		panel_1.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panelTextos.add(panel_1);
 		panel_1.setLayout(new GridLayout(0, 1, 0, 0));
-		
+
 		JScrollPane scrollCodigo = new JScrollPane();
 		panel_1.add(scrollCodigo);
-		
+
 		this.textoCodigo = new JTextArea();
 		textoCodigo.setEditable(false);
 		textoCodigo.setLineWrap(true);
 		scrollCodigo.setViewportView(this.textoCodigo);
-		
+
 		JLabel labelCodigo = new JLabel("Texto codificado");
 		labelCodigo.setFont(new Font("Tahoma", Font.BOLD, 12));
 		scrollCodigo.setColumnHeaderView(labelCodigo);
-		
+
 		JPanel panel_2 = new JPanel();
 		panel_2.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panelTextos.add(panel_2);
 		panel_2.setLayout(new GridLayout(0, 1, 0, 0));
-		
+
 		JScrollPane scrollRLC = new JScrollPane();
 		panel_2.add(scrollRLC);
-		
+
 		this.textoRLC = new JTextArea();
 		textoRLC.setEditable(false);
 		textoRLC.setLineWrap(true);
 		scrollRLC.setViewportView(this.textoRLC);
-		
+
 		JLabel labelRLC = new JLabel("RLC");
 		labelRLC.setFont(new Font("Tahoma", Font.BOLD, 12));
 		scrollRLC.setColumnHeaderView(labelRLC);
-		
+
 		JPanel panelCalculos = new JPanel();
 		panelCalculos.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panelResultados.add(panelCalculos, BorderLayout.SOUTH);
 		panelCalculos.setLayout(new GridLayout(0, 3, 10, 0));
-		
+
 		JPanel panelRendimiento = new JPanel();
 		panelRendimiento.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panelCalculos.add(panelRendimiento);
 		panelRendimiento.setLayout(new GridLayout(0, 2, 0, 0));
-		
+
 		JLabel labelRendimiento = new JLabel("Rendimiento del código:");
 		labelRendimiento.setHorizontalAlignment(SwingConstants.TRAILING);
 		labelRendimiento.setFont(new Font("Tahoma", Font.BOLD, 10));
 		panelRendimiento.add(labelRendimiento);
-		
+
 		this.textoRendimiento = new JTextArea();
 		this.textoRendimiento.setEditable(false);
 		panelRendimiento.add(this.textoRendimiento);
-		
+
 		JPanel panelRedundancia = new JPanel();
 		panelRedundancia.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panelCalculos.add(panelRedundancia);
 		panelRedundancia.setLayout(new GridLayout(0, 2, 0, 0));
-		
+
 		JLabel labelRedundancia = new JLabel("Redundancia del código:");
 		labelRedundancia.setHorizontalAlignment(SwingConstants.TRAILING);
 		labelRedundancia.setFont(new Font("Tahoma", Font.BOLD, 10));
 		panelRedundancia.add(labelRedundancia);
-		
+
 		this.textoRedundancia = new JTextArea();
 		this.textoRedundancia.setEditable(false);
 		panelRedundancia.add(this.textoRedundancia);
-		
+
 		JPanel panelCompresion = new JPanel();
 		panelCompresion.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		panelCalculos.add(panelCompresion);
 		panelCompresion.setLayout(new GridLayout(0, 2, 0, 0));
-		
+
 		JLabel labelCompresion = new JLabel("Tasa de compresión:");
 		labelCompresion.setHorizontalAlignment(SwingConstants.TRAILING);
 		labelCompresion.setFont(new Font("Tahoma", Font.BOLD, 10));
 		panelCompresion.add(labelCompresion);
-		
+
 		this.textoCompresion = new JTextArea();
 		this.textoCompresion.setEditable(false);
 		panelCompresion.add(this.textoCompresion);
@@ -214,30 +214,29 @@ public class VentanaParte1 extends JFrame implements ActionListener {
 		CardLayout layout = (CardLayout) this.switchEstado.getLayout();
 		int indice;
 		if (boton.getActionCommand().equals("ARCHIVO")) {
+			// Carga el archivo de entrada
 			int resultado = fileChooser.showOpenDialog(this);
 			if (resultado == JFileChooser.APPROVE_OPTION) {
 				this.direccion = fileChooser.getSelectedFile().getAbsolutePath();
 				this.botonHuffman.setEnabled(true);
 				this.botonShannon.setEnabled(true);
 				indice = this.direccion.lastIndexOf("\\");
-				this.labelDireccion.setText(this.direccion.substring(indice+1));
+				this.labelDireccion.setText(this.direccion.substring(indice + 1));
 			}
-		}
-		else 
-		{
+		} else {
+			// Aplica el código seleccionado, realiza los cálculos necesarios y muestra los resultados
 			this.fuente = new FuenteTexto(this.direccion);
 			if (boton.getActionCommand().equals("HUFFMAN"))
 				this.fuente.huffman();
 			else
 				this.fuente.shannonFano();
-			this.fuente.generarCantInfo();
 			this.fuente.generarTextoCodigo();
 			this.fuente.generarRLC();
-			this.textoOriginal.setText(this.fuente.getStringOriginal());
+			this.textoOriginal.setText(this.fuente.getTexto());
 			this.textoOriginal.setCaretPosition(0);
-			this.textoCodigo.setText(this.fuente.getStringCodigo());
+			this.textoCodigo.setText(this.fuente.getTextoCodigo());
 			this.textoCodigo.setCaretPosition(0);
-			this.textoRLC.setText(this.fuente.getStringRLC());
+			this.textoRLC.setText(this.fuente.getTextoRLC());
 			this.textoRLC.setCaretPosition(0);
 			this.textoRendimiento.setText(this.fuente.getRendimiento() + "");
 			this.textoRedundancia.setText(this.fuente.getRedundancia() + "");

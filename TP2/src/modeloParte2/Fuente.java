@@ -3,13 +3,12 @@ package modeloParte2;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 
 public class Fuente {
 	private double probEntrada[];
 	private int cantSimbolosEntrada, cantSimbolosSalida;
 	private ArrayList<Integer> mensajeEntrada, mensajeSalida;
-	private double cantInfoTeorica[], cantInfoExperimental[], probEntradaReal[], tablaCanal[][], tablaCanalReal[][];
+	private double probEntradaReal[], tablaCanal[][], tablaCanalReal[][];
 
 	public Fuente(double tablaEntrada[], int cantSimbolosEntrada, double tablaCanal[][], int cantSimbolosSalida) {
 		this.probEntrada = tablaEntrada;
@@ -35,8 +34,7 @@ public class Fuente {
 		for (i = 1; i < this.cantSimbolosEntrada; i++)
 			probAcum[i] = probAcum[i - 1] + probEntrada[i];
 
-		// Selecciona n s�mbolos al azar de acuerdo a sus probabilidades y los agrega a
-		// la secuencia, siendo n el par�metro cantidad.
+		// Selecciona n símbolos al azar de acuerdo a sus probabilidades y los agrega al mensaje, siendo n el parámetro cantidad.
 		for (i = 0; i < cantidad; i++) {
 			random = Math.random();
 			j = 0;
@@ -48,9 +46,8 @@ public class Fuente {
 		}
 
 		// Genera un vector de probabilidades "reales" basadas en la cantidad de
-		// ocurrencias de cada s�mbolo en el mensaje.
-		// A medida que n crece, este vector tiende a las probabilidades te�ricas
-		// almacenadas en la tabla.
+		// ocurrencias de cada símbolo en el mensaje.
+		// A medida que n crece, este vector tiende a las probabilidades teóricas.
 		for (i = 0; i < this.cantSimbolosEntrada; i++)
 			this.probEntradaReal[i] = (double) Collections.frequency(this.mensajeEntrada, i)
 					/ this.mensajeEntrada.size();
@@ -60,11 +57,13 @@ public class Fuente {
 	public void enviarMensaje() {
 		double probAcum[][] = new double[this.cantSimbolosEntrada][this.cantSimbolosSalida];
 		int i, j;
+		// Se calcula una matriz de probabilidades acumuladas en base a la matriz de probabilidades del canal
 		for (i = 0; i < this.cantSimbolosEntrada; i++) {
 			probAcum[i][0] = this.tablaCanal[i][0];
 			for (j = 1; j < this.cantSimbolosSalida; j++)
 				probAcum[i][j] = probAcum[i][j - 1] + this.tablaCanal[i][j];
 		}
+		// Por cada símbolo del mensaje de entrada se genera un símbolo del alfabeto de salida en base a las probabilidades calculadas.
 		for (int elemento : this.mensajeEntrada) {
 			double r = Math.random();
 			j = 0;
@@ -76,6 +75,7 @@ public class Fuente {
 		}
 	}
 
+	// Crea una matriz de probabilidades para el canal en base a los mensajes generados.
 	//PRE: Se ejecutó el método enviarMensaje
 	public void recrearTablaCanal() {
 		int i, j, cantidad;
@@ -212,8 +212,7 @@ public class Fuente {
 
 	public double getEquivocacionBATeorica() {
 		double retorno = 0;
-		int i, j, k;
-		double pB;
+		int i, j;
 		for (i = 0; i < this.cantSimbolosEntrada; i++)
 			for (j = 0; j < this.cantSimbolosSalida; j++) {
 				if (this.tablaCanal[i][j] > 0)
@@ -226,8 +225,7 @@ public class Fuente {
 	//PRE: Se ejecutó el método recrearTablaCanal.
 	public double getEquivocacionBAExperimental() {
 		double retorno = 0;
-		int i, j, k;
-		double pB;
+		int i, j;
 		for (i = 0; i < this.cantSimbolosEntrada; i++)
 			for (j = 0; j < this.cantSimbolosSalida; j++) {
 				if (this.tablaCanalReal[i][j] > 0)

@@ -13,12 +13,12 @@ import java.util.*;
 //
 public class FuenteTexto {
 	private ArrayList<Entrada> tabla, textoEntradas;
-	private double cantInfo[];
-	private String textoCodificado, textoRLC;
+	private String textoCodigo, textoRLC;
 	private double[] probAcum;
 	private String texto;
 	private int contadorCaracteres;
 
+	// Genera una fuente de memoria nula a partir de un archivo de texto.
 	public FuenteTexto(String direccion) {
 		try {
 			Entrada aux;
@@ -51,13 +51,6 @@ public class FuenteTexto {
 		}
 	}
 
-	public void mostrarTabla() {
-		for (Entrada aux : this.tabla) {
-			System.out.println(
-					aux.getSimbolo() + "|" + aux.getCodigo() + "|" + aux.getProbabilidad());
-		}
-	}
-
 	//PRE: La fuente de texto contiene al menos dos símbolos distintos.
 	//PRE: Las probabilidades de la tabla están ordenadas de manera ascendente.
 	public void huffman() {
@@ -65,6 +58,7 @@ public class FuenteTexto {
 			this.tabla.get(0).setCodigo("0");
 			this.tabla.get(1).setCodigo("1");
 		} else {
+			// Ida de la recursividad
 			Entrada aux1, aux2, aux3 = null;
 			aux1 = this.tabla.get(0);
 			this.tabla.remove(0);
@@ -74,7 +68,7 @@ public class FuenteTexto {
 			this.tabla.add(aux3);
 			Collections.sort(this.tabla);
 			this.huffman();
-
+			// Vuelta de la recursividad
 			aux1.setCodigo(aux3.getCodigo() + "0");
 			aux2.setCodigo(aux3.getCodigo() + "1");
 			this.tabla.remove(aux3);
@@ -92,7 +86,7 @@ public class FuenteTexto {
 	private void generarProbAcumSF() {
 		int i = 1;
 		double acum = 0;
-		//Para invertir el orden del ArrayList
+		// Para invertir el orden del ArrayList
 		Collections.reverse(this.tabla);
 		this.probAcum = new double[this.tabla.size() + 1];
 		for (Entrada elemento : this.tabla) {
@@ -107,6 +101,7 @@ public class FuenteTexto {
 			int k, i;
 			Entrada elemento;
 			k = this.getK(inicio, fin);
+			// Para evitar llamados infinitos con los mismos parámetros
 			if (k == fin)
 				k--;
 			for (i = inicio - 1; i < k; i++) {
@@ -122,7 +117,8 @@ public class FuenteTexto {
 			this.recShannonFano(k + 1, fin);
 		}
 	}
-
+	
+	// Devuelve el índice separador K para el cual la diferencia entre las sumatorias de probabilidades de cada subconjunto sea mínima 
 	private int getK(int inicio, int fin) {
 		int k = inicio;
 		double probRango = this.probAcum[fin] - this.probAcum[inicio - 1],
@@ -132,30 +128,17 @@ public class FuenteTexto {
 		return k;
 	}
 
-	//El orden del vector generado depende del orden de la tabla (código utilizado)
-	public void generarCantInfo() {
-		int i;
-		double prob;
-		this.cantInfo = new double[this.tabla.size()];
-		for (i = 0; i < this.tabla.size(); i++) {
-			prob = this.tabla.get(i).getProbabilidad();
-			if (prob != 0)
-				this.cantInfo[i] = Math.log(1.0 / prob) / Math.log(2);
-			else
-				this.cantInfo[i] = 0;
-		}
-	}
-
-	// PRE: Se ejecutó el método generarCantidadInfo().
 	public double getEntropia() {
 		int i;
-		double sumatoria = 0;
+		double sumatoria = 0, prob = 0;
 		for (i = 0; i < this.tabla.size(); i++)
-			sumatoria += this.cantInfo[i] * this.tabla.get(i).getProbabilidad();
+			prob = this.tabla.get(i).getProbabilidad();
+			if (prob != 0)
+				sumatoria += this.tabla.get(i).getProbabilidad() * Math.log(1.0 / prob) / Math.log(2);
 		return sumatoria;
 	}
 
-	//PRE: Ejecutar Huffman o Shanon-Fano
+	//PRE: Se ejecutó huffman o shannonFano
 	public double getLongitudMedia() {
 		double retorno = 0;
 		for (Entrada elemento : this.tabla)
@@ -168,14 +151,14 @@ public class FuenteTexto {
 	}
 
 	public double getRedundancia() {
-		return (1 - this.getRendimiento());
+		return 1 - this.getRendimiento();
 	}
 
-	//PRE: Ejecutar Huffman o Shanon-Fano
+	//PRE: Se ejecutó huffman o shannonFano
 	public void generarTextoCodigo() {
-		this.textoCodificado = "";
+		this.textoCodigo = "";
 		for (Entrada elemento : this.textoEntradas)
-			this.textoCodificado += elemento.getCodigo();	
+			this.textoCodigo += elemento.getCodigo();	
 	}
 	
 	
@@ -187,18 +170,18 @@ public class FuenteTexto {
 		public void generarRLC() {
 			int i, longitud, cont;
 			this.textoRLC = "";
-			longitud = this.textoCodificado.length();
+			longitud = this.textoCodigo.length();
 			i = 0;
 			while (i<longitud)
 	        {
 	            cont = 0;
-	            while (i<longitud && this.textoCodificado.charAt(i)=='0') {
+	            while (i<longitud && this.textoCodigo.charAt(i)=='0') {
 	                cont++;
 	                i++;
 	            }
 	            this.textoRLC += cont;
 	            cont = 0;
-	            while (i<longitud && this.textoCodificado.charAt(i)=='1'){
+	            while (i<longitud && this.textoCodigo.charAt(i)=='1'){
 	                cont++;
 	                i++;
 	            }
@@ -208,19 +191,22 @@ public class FuenteTexto {
 	        }
 		}
 
+	// Se ejecutaron generarTextoCodigo y generarRLC
 	public double getTasaCompresion() {
-		return (double) this.textoCodificado.length() / this.textoRLC.length();
+		return (double) this.textoCodigo.length() / this.textoRLC.length();
 	}
 
-	public String getStringOriginal() {
+	public String getTexto() {
 		return this.texto;
 	}
 
-	public String getStringCodigo() {
-		return this.textoCodificado;
+	// Se ejecutó generarTextoCodigo
+	public String getTextoCodigo() {
+		return this.textoCodigo;
 	}
 
-	public String getStringRLC() {
+	// Se ejecutó generarRLC
+	public String getTextoRLC() {
 		return this.textoRLC;
 	}
 }

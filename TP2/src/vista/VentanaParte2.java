@@ -323,7 +323,7 @@ public class VentanaParte2 extends JFrame implements ActionListener, KeyListener
 		pA.setText("P(A)");
 		pA.setHorizontalAlignment(JTextField.CENTER);
 
-		// Crea un layout en base a la cantidad de s�mbolos
+		// Crea un layout en base a las cantidades de símbolos
 		GridLayout layout = new GridLayout(this.cantEntrada + 1, this.cantSalida + 2);
 		layout.setVgap(100 / this.cantEntrada);
 		layout.setHgap(100 / this.cantSalida);
@@ -349,7 +349,7 @@ public class VentanaParte2 extends JFrame implements ActionListener, KeyListener
 			vectorIndicesB[i].setHorizontalAlignment(JTextField.CENTER);
 		}
 
-		// Crea la matriz a llenar llenar por el usuario
+		// Crea la matriz a llenar por el usuario
 		this.matrizCanal = new JTextField[this.cantEntrada][this.cantSalida];
 		this.panelMatriz.add(new JLabel());
 		this.panelMatriz.add(pA);
@@ -433,7 +433,7 @@ public class VentanaParte2 extends JFrame implements ActionListener, KeyListener
 						}
 						j++;
 					}
-					if (j == this.cantSalida)
+					if (this.filasCorrectas[fila] && j == this.cantSalida)
 						if (suma != 1) {
 							this.filasCorrectas[fila] = false;
 							this.matrizCorrecta = false;
@@ -451,8 +451,7 @@ public class VentanaParte2 extends JFrame implements ActionListener, KeyListener
 				i = 0;
 				suma = 0;
 				this.vectorCorrecto = true;
-				while (i < this.cantEntrada && this.vectorCorrecto)
-				{
+				while (i < this.cantEntrada && this.vectorCorrecto) {
 					elemento = this.vectorPriori[i].getText();
 					if (!elemento.isBlank() && elemento.matches("[0-9,.]+") && Double.parseDouble(elemento) <= 1
 							&& Double.parseDouble(elemento) >= 0)
