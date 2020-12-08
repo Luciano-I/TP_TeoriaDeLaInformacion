@@ -6,6 +6,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
+//
+//
+//CAMBIO: VER EL MÉTODO GENERARRLC
+//
+//
 public class FuenteTexto {
 	private ArrayList<Entrada> tabla, textoEntradas;
 	private double cantInfo[];
@@ -53,7 +58,7 @@ public class FuenteTexto {
 	public void mostrarTabla() {
 		for (Entrada aux : this.tabla) {
 			System.out.println(
-					aux.getSimbolo() + "|" + aux.getCodigo() + "|" + aux.getProbabilidad() + "|" + aux.getRLC());
+					aux.getSimbolo() + "|" + aux.getCodigo() + "|" + aux.getProbabilidad());
 		}
 	}
 
@@ -170,21 +175,42 @@ public class FuenteTexto {
 		return (1 - this.getRendimiento());
 	}
 
-	private void generarRLC() {
-		for (Entrada elemento : this.tabla)
-			elemento.setRLC();
-	}
-
 	//PRE: Ejecutar Huffman o Shanon-Fano
 	public void generarTextoCodigo() {
-		this.generarRLC();
-		this.textoRLC = "";
 		this.textoCodificado = "";
-		for (Entrada elemento : this.textoEntradas) {
-			this.textoCodificado += elemento.getCodigo();
-			this.textoRLC += elemento.getRLC();
-		}
+		for (Entrada elemento : this.textoEntradas)
+			this.textoCodificado += elemento.getCodigo();	
 	}
+	
+	
+	//CAMBIOS: La generación de RLC/compresión no tiene que ser símbolo a símbolo sino con el texto entero.
+	//Antes le asignabamos a cada Entrada un RLC y después las concatenabamos, pero quedaban muchísimos ceros en medio.
+	//De esa manera no era descomprimible (a menos que tengas una tabla que te diga qué RLC le corresponde a qué símbolo).
+	//Por ejemplo si A=1110 tendría RLC=031 y M=0000000 tendría RLC=7, AM tendría RLC=0317 que se descomprime como 11101111111 (nada que ver con lo que en realidad es)
+	//PRE: Se ejecutó generarTextoCodigo 
+		public void generarRLC() {
+			int i, longitud, cont;
+			this.textoRLC = "";
+			longitud = this.textoCodificado.length();
+			i = 0;
+			while (i<longitud)
+	        {
+	            cont = 0;
+	            while (i<longitud && this.textoCodificado.charAt(i)=='0') {
+	                cont++;
+	                i++;
+	            }
+	            this.textoRLC += cont;
+	            cont = 0;
+	            while (i<longitud && this.textoCodificado.charAt(i)=='1'){
+	                cont++;
+	                i++;
+	            }
+	            if (cont!=0)
+	            	this.textoRLC += cont;
+
+	        }
+		}
 
 	public double getTasaCompresion() {
 		return (double) this.textoCodificado.length() / this.textoRLC.length();
@@ -201,46 +227,4 @@ public class FuenteTexto {
 	public String getStringRLC() {
 		return this.textoRLC;
 	}
-
-	/*
-	// PRE: Se ejecutaron los métodos generarSecuencia() y generarCantidadInfo().
-	@Override
-	public void mostrarDatos() {
-	    int i;
-	    for (i = 0; i < this.cantSimbolos; i++) {
-	        System.out.println(this.tabla[i][0] + ":");
-	        System.out.println("Ocurrencias: " + Collections.frequency(this.secuencia, this.tabla[i][0]));
-	        System.out.println("Cantidad de información: " + this.cantInfo[i] + "\n");
-	    }
-	    System.out.println("\nEntropia: " + this.getEntropia());
-	}
-	
-	public void mostrarTabla() {
-	    int i;
-	    System.out.println("Símbolo:\tProbabilidad:\n");
-	    for (i = 0; i < this.cantSimbolos; i++)
-	        System.out.println(this.tabla[i][0] + "\t" + this.tabla[i][1] + "\n");
-	}
-	
-	// PRE: Se ejecutó el método generarCantInfo.
-	public String getCantInfo() {
-	    int i;
-	    DecimalFormat df = new DecimalFormat("#.###");
-	    String retorno = "{";
-	    retorno += df.format(this.cantInfo[0]);
-	    for (i=1;i<this.cantSimbolos;i++)
-	        retorno += "; " + df.format(this.cantInfo[i]);
-	    retorno += "}";
-	    return retorno;
-	}
-	
-	public String getFuente()
-	{
-	    int i;
-	    String retorno = "Símbolo:\tProbabilidad:\n";
-	    for (i=0;i<this.cantSimbolos;i++)
-	        retorno += this.tabla[i][0] + "\t" + this.tabla[i][1] + "\n";
-	    return retorno;
-	}
-	 */
 }

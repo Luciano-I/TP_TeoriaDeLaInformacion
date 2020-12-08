@@ -7,8 +7,6 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.File;
 
 import javax.swing.JButton;
@@ -24,9 +22,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import modeloParte1.FuenteTexto;
 import javax.swing.border.BevelBorder;
 import java.awt.Font;
-import javax.swing.border.TitledBorder;
 
-public class VentanaParte1 extends JFrame implements ActionListener, KeyListener {
+public class VentanaParte1 extends JFrame implements ActionListener {
 	private JPanel switchEstado;
 	private JFileChooser fileChooser;
 	private String direccion;
@@ -235,6 +232,7 @@ public class VentanaParte1 extends JFrame implements ActionListener, KeyListener
 				this.fuente.shannonFano();
 			this.fuente.generarCantInfo();
 			this.fuente.generarTextoCodigo();
+			this.fuente.generarRLC();
 			this.textoOriginal.setText(this.fuente.getStringOriginal());
 			this.textoOriginal.setCaretPosition(0);
 			this.textoCodigo.setText(this.fuente.getStringCodigo());
@@ -243,22 +241,8 @@ public class VentanaParte1 extends JFrame implements ActionListener, KeyListener
 			this.textoRLC.setCaretPosition(0);
 			this.textoRendimiento.setText(this.fuente.getRendimiento() + "");
 			this.textoRedundancia.setText(this.fuente.getRedundancia() + "");
-			this.textoCompresion.setText(this.fuente.getTasaCompresion() + ":1");
+			this.textoCompresion.setText(this.fuente.getTasaCompresion() + " : 1");
 			layout.show(this.switchEstado, "RESULTADOS");
 		}
 	}
-
-	@Override
-	public void keyPressed(KeyEvent arg0) {
-	}
-
-	@Override
-	public void keyReleased(KeyEvent arg0) {
-
-	}
-
-	@Override
-	public void keyTyped(KeyEvent arg0) {
-	}
-
 }

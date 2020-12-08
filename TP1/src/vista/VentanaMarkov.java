@@ -323,13 +323,13 @@ public class VentanaMarkov extends JFrame implements ActionListener, KeyListener
 		JButton boton = (JButton) arg0.getSource();
 		CardLayout layout = (CardLayout) this.switchEstado.getLayout();
 		if (boton.getActionCommand().equals("SIGINICIO")) {
-			// Pasa a la pantalla para generar una matriz de transición
+			// Pasa a la pantalla para generar una matriz de transiciï¿½n
 			this.cantSimbolos = Integer.parseInt(this.fieldCantSimbolos.getText());
 			this.inicializarPanelTransicion();
 			layout.show(this.switchEstado, "TRANSICION");
 
 		} else if (boton.getActionCommand().equals("SIGTRANS")) {
-			// Pasa a la pantalla de resultados desde una matriz de transición ingresada por
+			// Pasa a la pantalla de resultados desde una matriz de transiciï¿½n ingresada por
 			// el usuario
 			int i, j;
 			double transicion[][] = new double[this.cantSimbolos][this.cantSimbolos];
@@ -364,7 +364,7 @@ public class VentanaMarkov extends JFrame implements ActionListener, KeyListener
 		}
 	}
 
-	// Genera la fuente con los datos ingresado y realiza todos los cálculos
+	// Genera la fuente con los datos ingresado y realiza todos los cï¿½lculos
 	// necesarios
 	public void generarDatosFuente(int n, String indice[], double transicion[][]) {
 		this.fuente = new FuenteDeMarkov(indice, transicion, this.cantSimbolos);
@@ -385,13 +385,13 @@ public class VentanaMarkov extends JFrame implements ActionListener, KeyListener
 	public void inicializarPanelTransicion() {
 		int i, j;
 
-		// Crea un layout en base a la cantidad de símbolos
+		// Crea un layout en base a la cantidad de sï¿½mbolos
 		GridLayout layout = new GridLayout(this.cantSimbolos + 1, this.cantSimbolos + 1);
 		layout.setVgap(100 / this.cantSimbolos);
 		layout.setHgap(100 / this.cantSimbolos);
 		this.panelMatriz.setLayout(layout);
 
-		// Crea dos vectores de campos para mostrar como fila y columna de símbolos
+		// Crea dos vectores de campos para mostrar como fila y columna de sï¿½mbolos
 		this.vectorIndicesFijo = new JTextField[this.cantSimbolos];
 		this.vectorIndices = new JTextField[this.cantSimbolos];
 		for (i = 0; i < this.cantSimbolos; i++) {
@@ -405,9 +405,9 @@ public class VentanaMarkov extends JFrame implements ActionListener, KeyListener
 			this.vectorIndices[i].setName("" + i);
 		}
 
-		// Crea la matriz de transición a llenar por el usuario
+		// Crea la matriz de transiciï¿½n a llenar por el usuario
 		this.matrizTransicion = new JTextField[this.cantSimbolos][this.cantSimbolos];
-		this.panelMatriz.add(new JLabel("Símbolo:"));
+		this.panelMatriz.add(new JLabel("Sï¿½mbolo:"));
 		this.columnasCorrectas = new boolean[this.cantSimbolos];
 		for (i = 0; i < this.cantSimbolos; i++)
 			this.panelMatriz.add(this.vectorIndicesFijo[i]);
@@ -434,7 +434,7 @@ public class VentanaMarkov extends JFrame implements ActionListener, KeyListener
 	public void keyReleased(KeyEvent arg0) {
 		JTextField field = (JTextField) arg0.getSource();
 		if (field.getName().equals("CANTSIMBOLOS")) {
-			// Valida la cantidad de símbolos ingresada en la primera pantalla
+			// Valida la cantidad de sï¿½mbolos ingresada en la primera pantalla
 			String textoCantSimbolos = this.fieldCantSimbolos.getText();
 			if (!textoCantSimbolos.isBlank() && textoCantSimbolos.matches("[0-9]+")
 					&& Integer.parseInt(textoCantSimbolos) > 1 && Integer.parseInt(textoCantSimbolos) < 8)
@@ -474,7 +474,7 @@ public class VentanaMarkov extends JFrame implements ActionListener, KeyListener
 					this.columnasCorrectas[columna] = false;
 					this.matrizCorrecta = false;
 				} else {
-					// Chequea si la suma de la columna da 1 y si es así chequea si la matriz pasa a
+					// Chequea si la suma de la columna da 1 y si es asï¿½ chequea si la matriz pasa a
 					// ser correcta
 					String elemento;
 					suma = 0;
@@ -519,3 +519,4 @@ public class VentanaMarkov extends JFrame implements ActionListener, KeyListener
 	}
 
 }
+

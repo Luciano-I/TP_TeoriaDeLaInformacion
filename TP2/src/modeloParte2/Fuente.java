@@ -211,6 +211,32 @@ public class Fuente {
 				this.tablaCanalReal[i][j] /= cont[i];
 	}
 
+	public double getEntropiaCanalTeorica()
+	{
+		double retorno = 0,p;
+		int i,j;
+		for (i=0;i<this.cantSimbolosEntrada;i++)
+			for (j=0;j<this.cantSimbolosSalida;j++) {
+				p = this.tablaCanal[i][j] * this.probEntrada[i];
+				if (p != 0)
+					retorno += -p * Math.log(p) / Math.log(2);
+			}
+		return retorno;
+	}
+	
+	public double getEntropiaCanalExperimental()
+	{
+		double retorno = 0,p;
+		int i,j;
+		for (i=0;i<this.cantSimbolosEntrada;i++)
+			for (j=0;j<this.cantSimbolosSalida;j++) {
+				p = this.tablaCanalReal[i][j] * this.probEntradaReal[i];
+				if (p != 0)
+					retorno += -p * Math.log(p) / Math.log(2);
+			}
+		return retorno;
+	}
+	
 	public double getInformacionMutuaTeorica() {
 		return this.getEntropiaEntradaTeorica() - this.getEquivocacionTeorica();
 	}
