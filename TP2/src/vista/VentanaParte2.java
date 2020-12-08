@@ -22,25 +22,22 @@ import javax.swing.JTextArea;
 import javax.swing.border.BevelBorder;
 import java.awt.FlowLayout;
 import java.awt.Color;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.event.KeyAdapter;
+import javax.swing.JScrollPane;
 
 public class VentanaParte2 extends JFrame implements ActionListener, KeyListener {
 	private JPanel switchEstado;
 	private JPanel panelMatriz;
-	private JButton botonSiguienteTrans, botonSiguienteInicio, botonC1, botonC3, botonC2;
-	private JTextField[][] matrizTransicion;
-	private JTextField[] vectorIndices, vectorIndicesFijo;
-	private JTextArea textoEntropiaTeorica, textoEntropiaExperimental, textoVEstacionarioTeorico,
-			textoVEstacionarioExperimental, textoTeorica, textoExperimental;
-	private int cantSimbolos;
+	private JButton botonSiguienteCanal, botonSiguienteInicio, botonC1, botonC3, botonC2;
+	private JTextField[][] matrizCanal;
+	private JTextField[] vectorPriori;
+	private JTextArea textoTeorica, textoExperimental;
 	private Fuente fuente;
-	private boolean elementos2Correcto, columnasCorrectas[], matrizCorrecta;
+	private boolean filasCorrectas[], matrizCorrecta, vectorCorrecto;
 	private JTextField fieldCantEntrada;
 	private JTextField fieldCantSalida;
 	private JTextField fieldLongitud;
+	private int cantEntrada, cantSalida, longitud;
+	double tablaEntrada[] = {}, tablaCanal[][] = { {} };
 
 	public VentanaParte2() {
 		getContentPane().setLayout(new BorderLayout(0, 0));
@@ -144,25 +141,25 @@ public class VentanaParte2 extends JFrame implements ActionListener, KeyListener
 		labelAnexo.setFont(new Font("Tahoma", Font.BOLD, 24));
 		anexo.add(labelAnexo, BorderLayout.NORTH);
 
-		JPanel cardTransicion = new JPanel();
-		switchEstado.add(cardTransicion, "TRANSICION");
-		cardTransicion.setLayout(new BorderLayout(0, 0));
+		JPanel cardCanal = new JPanel();
+		switchEstado.add(cardCanal, "CANAL");
+		cardCanal.setLayout(new BorderLayout(0, 0));
 
 		JLabel labelNOTA = new JLabel(
 				"NOTAS: Las prob. de los símbolos de entrada así como todas las filas de la matriz deben sumar 1. Los decimales se separan con un punto.");
 		labelNOTA.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		cardTransicion.add(labelNOTA, BorderLayout.NORTH);
+		cardCanal.add(labelNOTA, BorderLayout.NORTH);
 
-		JPanel panelSigTrans = new JPanel();
-		cardTransicion.add(panelSigTrans, BorderLayout.SOUTH);
-		panelSigTrans.setLayout(new BorderLayout(0, 0));
+		JPanel panelSigCanal = new JPanel();
+		cardCanal.add(panelSigCanal, BorderLayout.SOUTH);
+		panelSigCanal.setLayout(new BorderLayout(0, 0));
 
-		this.botonSiguienteTrans = new JButton("Siguiente");
-		botonSiguienteTrans.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		this.botonSiguienteTrans.setActionCommand("SIGTRANS");
-		this.botonSiguienteTrans.addActionListener(this);
-		this.botonSiguienteTrans.setEnabled(false);
-		panelSigTrans.add(this.botonSiguienteTrans, BorderLayout.EAST);
+		this.botonSiguienteCanal = new JButton("Siguiente");
+		botonSiguienteCanal.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		this.botonSiguienteCanal.setActionCommand("SIGCANAL");
+		this.botonSiguienteCanal.addActionListener(this);
+		this.botonSiguienteCanal.setEnabled(false);
+		panelSigCanal.add(this.botonSiguienteCanal, BorderLayout.EAST);
 
 		JPanel marcoLongitud = new JPanel();
 		marcoLongitud.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
@@ -185,7 +182,7 @@ public class VentanaParte2 extends JFrame implements ActionListener, KeyListener
 
 		this.panelMatriz = new JPanel();
 		this.panelMatriz.setVisible(false);
-		cardTransicion.add(this.panelMatriz, BorderLayout.CENTER);
+		cardCanal.add(this.panelMatriz, BorderLayout.CENTER);
 
 		JPanel cardResultados = new JPanel();
 		switchEstado.add(cardResultados, "RESULTADOS");
@@ -206,60 +203,16 @@ public class VentanaParte2 extends JFrame implements ActionListener, KeyListener
 		labelPanelTeorico.setHorizontalAlignment(SwingConstants.CENTER);
 		panelTeorico.add(labelPanelTeorico, BorderLayout.NORTH);
 
-		JPanel panelResultadosTeoricos = new JPanel();
-		panelTeorico.add(panelResultadosTeoricos, BorderLayout.SOUTH);
-		GridBagLayout gbl_panelResultadosTeoricos = new GridBagLayout();
-		gbl_panelResultadosTeoricos.columnWidths = new int[] { 125, 377, 0 };
-		gbl_panelResultadosTeoricos.rowHeights = new int[] { 22, 22, 0 };
-		gbl_panelResultadosTeoricos.columnWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
-		gbl_panelResultadosTeoricos.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
-		panelResultadosTeoricos.setLayout(gbl_panelResultadosTeoricos);
-
-		JLabel labelVEstacionarioTeorico = new JLabel("Vector estacionario:");
-		labelVEstacionarioTeorico.setHorizontalAlignment(SwingConstants.TRAILING);
-		GridBagConstraints gbc_labelVEstacionarioTeorico = new GridBagConstraints();
-		gbc_labelVEstacionarioTeorico.fill = GridBagConstraints.BOTH;
-		gbc_labelVEstacionarioTeorico.insets = new Insets(0, 0, 5, 5);
-		gbc_labelVEstacionarioTeorico.gridx = 0;
-		gbc_labelVEstacionarioTeorico.gridy = 0;
-		panelResultadosTeoricos.add(labelVEstacionarioTeorico, gbc_labelVEstacionarioTeorico);
-
-		this.textoVEstacionarioTeorico = new JTextArea();
-		this.textoVEstacionarioTeorico.setEditable(false);
-		GridBagConstraints gbc_textoVEstacionarioTeorico = new GridBagConstraints();
-		gbc_textoVEstacionarioTeorico.fill = GridBagConstraints.BOTH;
-		gbc_textoVEstacionarioTeorico.insets = new Insets(0, 0, 5, 0);
-		gbc_textoVEstacionarioTeorico.gridx = 1;
-		gbc_textoVEstacionarioTeorico.gridy = 0;
-		panelResultadosTeoricos.add(this.textoVEstacionarioTeorico, gbc_textoVEstacionarioTeorico);
-
-		JLabel labelEntropiaTeorica = new JLabel("Entrop\u00EDa:");
-		labelEntropiaTeorica.setHorizontalAlignment(SwingConstants.TRAILING);
-		GridBagConstraints gbc_labelEntropiaTeorica = new GridBagConstraints();
-		gbc_labelEntropiaTeorica.fill = GridBagConstraints.BOTH;
-		gbc_labelEntropiaTeorica.insets = new Insets(0, 0, 0, 5);
-		gbc_labelEntropiaTeorica.gridx = 0;
-		gbc_labelEntropiaTeorica.gridy = 1;
-		panelResultadosTeoricos.add(labelEntropiaTeorica, gbc_labelEntropiaTeorica);
-
-		this.textoEntropiaTeorica = new JTextArea();
-		this.textoEntropiaTeorica.setEditable(false);
-		GridBagConstraints gbc_textoEntropiaTeorica = new GridBagConstraints();
-		gbc_textoEntropiaTeorica.fill = GridBagConstraints.BOTH;
-		gbc_textoEntropiaTeorica.gridx = 1;
-		gbc_textoEntropiaTeorica.gridy = 1;
-		panelResultadosTeoricos.add(this.textoEntropiaTeorica, gbc_textoEntropiaTeorica);
-
 		JPanel panelMatrizTeorica = new JPanel();
 		panelTeorico.add(panelMatrizTeorica, BorderLayout.CENTER);
 		panelMatrizTeorica.setLayout(new BorderLayout(0, 0));
 
-		JLabel labelTransicionTeorica = new JLabel("Matriz de transici\u00F3n:");
-		panelMatrizTeorica.add(labelTransicionTeorica, BorderLayout.NORTH);
+		JScrollPane scrollTeorica = new JScrollPane();
+		panelMatrizTeorica.add(scrollTeorica, BorderLayout.CENTER);
 
 		this.textoTeorica = new JTextArea();
 		this.textoTeorica.setEditable(false);
-		panelMatrizTeorica.add(this.textoTeorica, BorderLayout.CENTER);
+		scrollTeorica.setViewportView(this.textoTeorica);
 
 		JPanel marcoExperimental = new JPanel();
 		marcoExperimental.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
@@ -276,63 +229,19 @@ public class VentanaParte2 extends JFrame implements ActionListener, KeyListener
 		labelPanelExperimental.setFont(new Font("Tahoma", Font.BOLD, 14));
 		panelExperimental.add(labelPanelExperimental, BorderLayout.NORTH);
 
-		JPanel panelResultadosExperimentales = new JPanel();
-		panelExperimental.add(panelResultadosExperimentales, BorderLayout.SOUTH);
-		GridBagLayout gbl_panelResultadosExperimentales = new GridBagLayout();
-		gbl_panelResultadosExperimentales.columnWidths = new int[] { 125, 377, 0 };
-		gbl_panelResultadosExperimentales.rowHeights = new int[] { 22, 22, 0 };
-		gbl_panelResultadosExperimentales.columnWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
-		gbl_panelResultadosExperimentales.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
-		panelResultadosExperimentales.setLayout(gbl_panelResultadosExperimentales);
-
-		JLabel labelVEstacionarioExperimental = new JLabel("Vector estacionario:");
-		labelVEstacionarioExperimental.setHorizontalAlignment(SwingConstants.TRAILING);
-		GridBagConstraints gbc_labelVEstacionarioExperimental = new GridBagConstraints();
-		gbc_labelVEstacionarioExperimental.fill = GridBagConstraints.BOTH;
-		gbc_labelVEstacionarioExperimental.insets = new Insets(0, 0, 5, 5);
-		gbc_labelVEstacionarioExperimental.gridx = 0;
-		gbc_labelVEstacionarioExperimental.gridy = 0;
-		panelResultadosExperimentales.add(labelVEstacionarioExperimental, gbc_labelVEstacionarioExperimental);
-
-		this.textoVEstacionarioExperimental = new JTextArea();
-		this.textoVEstacionarioExperimental.setEditable(false);
-		GridBagConstraints gbc_textoVEstacionarioExperimental = new GridBagConstraints();
-		gbc_textoVEstacionarioExperimental.fill = GridBagConstraints.BOTH;
-		gbc_textoVEstacionarioExperimental.insets = new Insets(0, 0, 5, 0);
-		gbc_textoVEstacionarioExperimental.gridx = 1;
-		gbc_textoVEstacionarioExperimental.gridy = 0;
-		panelResultadosExperimentales.add(this.textoVEstacionarioExperimental, gbc_textoVEstacionarioExperimental);
-
-		JLabel labelEntropiaExperimental = new JLabel("Entrop\u00EDa:");
-		labelEntropiaExperimental.setHorizontalAlignment(SwingConstants.TRAILING);
-		GridBagConstraints gbc_labelEntropiaExperimental = new GridBagConstraints();
-		gbc_labelEntropiaExperimental.fill = GridBagConstraints.BOTH;
-		gbc_labelEntropiaExperimental.insets = new Insets(0, 0, 0, 5);
-		gbc_labelEntropiaExperimental.gridx = 0;
-		gbc_labelEntropiaExperimental.gridy = 1;
-		panelResultadosExperimentales.add(labelEntropiaExperimental, gbc_labelEntropiaExperimental);
-
-		this.textoEntropiaExperimental = new JTextArea();
-		this.textoEntropiaExperimental.setEditable(false);
-		GridBagConstraints gbc_textoEntropiaExperimental = new GridBagConstraints();
-		gbc_textoEntropiaExperimental.fill = GridBagConstraints.BOTH;
-		gbc_textoEntropiaExperimental.gridx = 1;
-		gbc_textoEntropiaExperimental.gridy = 1;
-		panelResultadosExperimentales.add(this.textoEntropiaExperimental, gbc_textoEntropiaExperimental);
-
 		JPanel panelMatrizExperimental = new JPanel();
 		panelExperimental.add(panelMatrizExperimental, BorderLayout.CENTER);
 		panelMatrizExperimental.setLayout(new BorderLayout(0, 0));
 
-		JLabel labelTransicionExperimental = new JLabel("Matriz de transici\u00F3n:");
-		panelMatrizExperimental.add(labelTransicionExperimental, BorderLayout.NORTH);
+		JScrollPane scrollExperimental = new JScrollPane();
+		panelMatrizExperimental.add(scrollExperimental, BorderLayout.CENTER);
 
 		this.textoExperimental = new JTextArea();
 		this.textoExperimental.setEditable(false);
-		panelMatrizExperimental.add(this.textoExperimental, BorderLayout.CENTER);
+		scrollExperimental.setViewportView(this.textoExperimental);
 
+		this.vectorCorrecto = false;
 		this.matrizCorrecta = false;
-		this.elementos2Correcto = false;
 		this.setMinimumSize(new Dimension(1024, 500));
 		this.setResizable(true);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -343,112 +252,120 @@ public class VentanaParte2 extends JFrame implements ActionListener, KeyListener
 	public void actionPerformed(ActionEvent arg0) {
 		JButton boton = (JButton) arg0.getSource();
 		CardLayout layout = (CardLayout) this.switchEstado.getLayout();
-		int longitud = Integer.parseInt(this.fieldLongitud.getText());
-		int cantEntrada = 0;
-		int cantSalida = 0;
+		this.longitud = Integer.parseInt(this.fieldLongitud.getText());
 		if (boton.getActionCommand().equals("SIGINICIO")) {
-			// Pasa a la pantalla para generar una matriz de transici�n
-			//this.cantSimbolos = Integer.parseInt(this.fieldCantSimbolos.getText());
-			this.inicializarPanelTransicion();
-			layout.show(this.switchEstado, "TRANSICION");
+			// Pasa a la pantalla para generar un canal
+			this.cantEntrada = Integer.parseInt(this.fieldCantEntrada.getText());
+			this.cantSalida = Integer.parseInt(this.fieldCantSalida.getText());
+			this.inicializarPanelCanal();
+			layout.show(this.switchEstado, "CANAL");
 
 		} else {
-			double tablaEntrada[] = {};
-			double tablaCanal[][] = {{}};
-			if (boton.getActionCommand().equals("SIGTRANS")) {
-				// Pasa a la pantalla de resultados desde una matriz de transici�n ingresada por
+			if (boton.getActionCommand().equals("SIGCANAL")) {
+				// Pasa a la pantalla de resultados desde un canal ingresado por
 				// el usuario
 				int i, j;
-				double transicion[][] = new double[this.cantSimbolos][this.cantSimbolos];
-				String indice[] = new String[this.cantSimbolos];
-				for (i = 0; i < this.cantSimbolos; i++) {
-					indice[i] = this.vectorIndices[i].getText();
-					for (j = 0; j < this.cantSimbolos; j++) {
-						transicion[i][j] = Double.parseDouble(this.matrizTransicion[i][j].getText());
+				this.tablaEntrada = new double[this.cantEntrada];
+				this.tablaCanal = new double[this.cantEntrada][this.cantSalida];
+				for (i = 0; i < this.cantEntrada; i++) {
+					this.tablaEntrada[i] = Double.parseDouble(this.vectorPriori[i].getText());
+					for (j = 0; j < this.cantSalida; j++) {
+						this.tablaCanal[i][j] = Double.parseDouble(this.matrizCanal[i][j].getText());
 					}
 				}
 			} else if (boton.getActionCommand().equals("CANAL1")) {
 				// Pasa a la pantalla de resultados correspondiente al Canal 1 del Anexo 2
 				double auxEntrada[] = { 0.4, 0.6 };
-				tablaEntrada = auxEntrada;
-				cantEntrada = 2;
+				this.tablaEntrada = auxEntrada;
+				this.cantEntrada = 2;
 				double auxCanal[][] = { { 0, 0, 0.3, 0.3, 0.4 }, { 0.5, 0.5, 0, 0, 0 } };
-				tablaCanal = auxCanal;
-				cantSalida = 5;
+				this.tablaCanal = auxCanal;
+				this.cantSalida = 5;
 			} else if (boton.getActionCommand().equals("CANAL2")) {
 				// Pasa a la pantalla de resultados correspondiente al Canal 2 del Anexo 2
 				double auxEntrada[] = { 0.3, 0.3, 0.3, 0.05, 0.05 };
-				tablaEntrada = auxEntrada;
-				cantEntrada = 5;
+				this.tablaEntrada = auxEntrada;
+				this.cantEntrada = 5;
 				double auxCanal[][] = { { 0, 0, 0, 0.2, 0.8 }, { 0.5, 0.4, 0.1, 0, 0 }, { 0.1, 0.25, 0.25, 0.3, 0.1 },
 						{ 0.2, 0.2, 0.2, 0.2, 0.2 }, { 0, 0, 1, 0, 0 } };
-				tablaCanal = auxCanal;
-				cantSalida = 5;
+				this.tablaCanal = auxCanal;
+				this.cantSalida = 5;
 			} else if (boton.getActionCommand().equals("CANAL3")) {
 				// Pasa a la pantalla de resultados correspondiente al Canal 3 del Anexo 2
 				double auxEntrada[] = { 0.25, 0.25, 0.25, 0.25 };
-				tablaEntrada = auxEntrada;
-				cantEntrada = 4;
+				this.tablaEntrada = auxEntrada;
+				this.cantEntrada = 4;
 				double auxCanal[][] = { { 0.3, 0.5, 0.2 }, { 0.3, 0.5, 0.2 }, { 0.3, 0.5, 0.2 }, { 0, 1, 0 } };
-				tablaCanal = auxCanal;
-				cantSalida = 3;
+				this.tablaCanal = auxCanal;
+				this.cantSalida = 3;
 			}
-			this.generarDatosFuente(longitud, tablaEntrada, cantEntrada, tablaCanal, cantSalida);
+			this.generarDatosCanal();
 			layout.show(this.switchEstado, "RESULTADOS");
 		}
 	}
 
-	// Genera la fuente con los datos ingresado y realiza todos los c�lculos
-	// necesarios
-	public void generarDatosFuente(int longitud, double tablaEntrada[], int cantEntrada, double tablaCanal[][], int cantSalida) {
-		this.fuente = new Fuente(tablaEntrada,cantEntrada,tablaCanal,cantSalida);
-		this.fuente.generarMensajeEntrada(longitud);
+	public void generarDatosCanal() {
+		this.fuente = new Fuente(this.tablaEntrada, cantEntrada, this.tablaCanal, cantSalida);
+		this.textoTeorica.setText(this.fuente.getResultadosTeoricos());
+		this.textoTeorica.setCaretPosition(0);
+		this.fuente.generarMensajeEntrada(this.longitud);
 		this.fuente.enviarMensaje();
-		//SETEAR MENSAJES EN PANTALLA RESULTADOS
 		this.fuente.recrearTablaCanal();
-		this.fuente.generarCantInfoTeorica();
-		this.fuente.generarCantInfoExperimental();
-		//SETEAR TEXTOS EN PANTALLA RESULTADOS
+		this.textoExperimental.setText(this.fuente.getResultadosExperimentales());
+		this.textoExperimental.setCaretPosition(0);
 	}
 
-	public void inicializarPanelTransicion() {
+	public void inicializarPanelCanal() {
 		int i, j;
+		JLabel[] vectorIndicesA, vectorIndicesB;
+		JLabel pA = new JLabel();
+
+		pA.setText("P(A)");
+		pA.setHorizontalAlignment(JTextField.CENTER);
 
 		// Crea un layout en base a la cantidad de s�mbolos
-		GridLayout layout = new GridLayout(this.cantSimbolos + 1, this.cantSimbolos + 1);
-		layout.setVgap(100 / this.cantSimbolos);
-		layout.setHgap(100 / this.cantSimbolos);
+		GridLayout layout = new GridLayout(this.cantEntrada + 1, this.cantSalida + 2);
+		layout.setVgap(100 / this.cantEntrada);
+		layout.setHgap(100 / this.cantSalida);
 		this.panelMatriz.setLayout(layout);
 
-		// Crea dos vectores de campos para mostrar como fila y columna de s�mbolos
-		this.vectorIndicesFijo = new JTextField[this.cantSimbolos];
-		this.vectorIndices = new JTextField[this.cantSimbolos];
-		for (i = 0; i < this.cantSimbolos; i++) {
-			this.vectorIndicesFijo[i] = new JTextField();
-			this.vectorIndicesFijo[i].setEditable(false);
-			this.vectorIndicesFijo[i].setHorizontalAlignment(JTextField.CENTER);
-			this.vectorIndices[i] = new JTextField();
-			this.vectorIndices[i].addKeyListener(this);
-			this.vectorIndices[i].setBackground(Color.lightGray);
-			this.vectorIndices[i].setHorizontalAlignment(JTextField.CENTER);
-			this.vectorIndices[i].setName("" + i);
+		// Crea dos vectores de campos para mostrar como fila y columna de símbolos, además de un vector de campos para probabilidades a priori
+		vectorIndicesA = new JLabel[this.cantEntrada];
+		vectorIndicesB = new JLabel[this.cantSalida];
+		this.vectorPriori = new JTextField[this.cantEntrada];
+		for (i = 0; i < this.cantEntrada; i++) {
+			vectorIndicesA[i] = new JLabel();
+			vectorIndicesA[i].setText("A" + (i + 1));
+			vectorIndicesA[i].setHorizontalAlignment(JTextField.CENTER);
+			this.vectorPriori[i] = new JTextField();
+			this.vectorPriori[i].setHorizontalAlignment(JTextField.CENTER);
+			this.vectorPriori[i].setBackground(Color.LIGHT_GRAY);
+			this.vectorPriori[i].addKeyListener(this);
+			this.vectorPriori[i].setName(i + "");
+		}
+		for (i = 0; i < this.cantSalida; i++) {
+			vectorIndicesB[i] = new JLabel();
+			vectorIndicesB[i].setText("B" + (i + 1));
+			vectorIndicesB[i].setHorizontalAlignment(JTextField.CENTER);
 		}
 
-		// Crea la matriz de transici�n a llenar por el usuario
-		this.matrizTransicion = new JTextField[this.cantSimbolos][this.cantSimbolos];
-		this.panelMatriz.add(new JLabel("S�mbolo:"));
-		this.columnasCorrectas = new boolean[this.cantSimbolos];
-		for (i = 0; i < this.cantSimbolos; i++)
-			this.panelMatriz.add(this.vectorIndicesFijo[i]);
-		for (i = 0; i < this.cantSimbolos; i++) {
-			this.panelMatriz.add(vectorIndices[i]);
-			this.columnasCorrectas[i] = false;
-			for (j = 0; j < this.cantSimbolos; j++) {
-				this.matrizTransicion[i][j] = new JTextField();
-				this.matrizTransicion[i][j].addKeyListener(this);
-				this.matrizTransicion[i][j].setHorizontalAlignment(JTextField.CENTER);
-				this.matrizTransicion[i][j].setName(i + "," + j);
-				this.panelMatriz.add(this.matrizTransicion[i][j]);
+		// Crea la matriz a llenar llenar por el usuario
+		this.matrizCanal = new JTextField[this.cantEntrada][this.cantSalida];
+		this.panelMatriz.add(new JLabel());
+		this.panelMatriz.add(pA);
+		this.filasCorrectas = new boolean[this.cantEntrada];
+		for (j = 0; j < this.cantSalida; j++)
+			this.panelMatriz.add(vectorIndicesB[j]);
+		for (i = 0; i < this.cantEntrada; i++) {
+			this.panelMatriz.add(vectorIndicesA[i]);
+			this.panelMatriz.add(this.vectorPriori[i]);
+			this.filasCorrectas[i] = false;
+			for (j = 0; j < this.cantSalida; j++) {
+				this.matrizCanal[i][j] = new JTextField();
+				this.matrizCanal[i][j].addKeyListener(this);
+				this.matrizCanal[i][j].setHorizontalAlignment(JTextField.CENTER);
+				this.matrizCanal[i][j].setName(i + "," + j);
+				this.panelMatriz.add(this.matrizCanal[i][j]);
 			}
 		}
 
@@ -487,78 +404,68 @@ public class VentanaParte2 extends JFrame implements ActionListener, KeyListener
 				this.botonC3.setEnabled(false);
 				this.botonSiguienteInicio.setEnabled(false);
 			}
-		} /* TODO else if (field.getName().equals("ELEMENTOS1")) {
-			// Valida la cantidad de elementos a generar ingresada en la primera pantalla
-			String textoElementos1 = field.getText();
-			if (!textoElementos1.isBlank() && textoElementos1.matches("[0-9]+")
-					&& Integer.parseInt(textoElementos1) > 0) {
-				this.botonC1.setEnabled(true);
-				this.botonC2.setEnabled(true);
-			} else {
-				this.botonC1.setEnabled(false);
-				this.botonC2.setEnabled(false);
-			}
-			} else {
-			// Valida los campos de la segunda pantalla (para matrices nuevas)
+		} else {
+			// Valida los campos de la segunda pantalla (para canales nuevas)
 			int i, j;
 			double suma;
-			if (field.getName().equals("ELEMENTOS2")) {
-				// Valida la cantidad de elementos a generar ingresada en la segunda pantalla
-				// (para matrices nuevas)
-				String textoElementos2 = field.getText();
-				if (!textoElementos2.isBlank() && textoElementos2.matches("[0-9]+")
-						&& Integer.parseInt(textoElementos2) > 0)
-					this.elementos2Correcto = true;
-				else
-					this.elementos2Correcto = false;
-			} else if (field.getName().contains(",")) {
+			String textoField = field.getText(), elemento;
+			if (field.getName().contains(",")) {
 				// Valida los datos ingresados en la matriz
-				String textoField = field.getText();
-				int columna = Integer.parseInt(field.getName().split(",")[1]);
+				int fila = Integer.parseInt(field.getName().split(",")[0]);
 				if (textoField.isBlank() || !textoField.matches("[0-9,.]+") || Double.parseDouble(textoField) > 1
 						|| Double.parseDouble(textoField) < 0) {
-					this.columnasCorrectas[columna] = false;
+					this.filasCorrectas[fila] = false;
 					this.matrizCorrecta = false;
 				} else {
-					// Chequea si la suma de la columna da 1 y si es as� chequea si la matriz pasa a
+					// Chequea si la suma de la fila da 1 y si es así chequea si la matriz pasa a
 					// ser correcta
-					String elemento;
 					suma = 0;
-					i = 0;
-					this.columnasCorrectas[columna] = true;
-					while (i < this.cantSimbolos && this.columnasCorrectas[columna]) {
-						elemento = this.matrizTransicion[i][columna].getText();
+					j = 0;
+					this.filasCorrectas[fila] = true;
+					while (j < this.cantSalida && this.filasCorrectas[fila]) {
+						elemento = this.matrizCanal[fila][j].getText();
 						if (!elemento.isBlank() && elemento.matches("[0-9,.]+") && Double.parseDouble(elemento) <= 1
 								&& Double.parseDouble(elemento) >= 0)
 							suma += Double.parseDouble(elemento);
 						else {
-							this.columnasCorrectas[columna] = false;
+							this.filasCorrectas[fila] = false;
 							this.matrizCorrecta = false;
 						}
-						i++;
+						j++;
 					}
-					if (i == this.cantSimbolos)
+					if (j == this.cantSalida)
 						if (suma != 1) {
-							this.columnasCorrectas[columna] = false;
+							this.filasCorrectas[fila] = false;
 							this.matrizCorrecta = false;
 						} else {
 							this.matrizCorrecta = true;
 							i = 0;
-							while (i < this.cantSimbolos && this.columnasCorrectas[i])
+							while (i < this.cantEntrada && this.filasCorrectas[i])
 								i++;
-							if (i != this.cantSimbolos)
+							if (i != this.cantEntrada)
 								this.matrizCorrecta = false;
 						}
 				}
 			} else {
-				// Copia el elemento del vector de indices ingresados al fijo
-				int indice = Integer.parseInt(field.getName());
-				this.vectorIndicesFijo[indice].setText(this.vectorIndices[indice].getText());
+				// Valida los datos ingresados en el vector de probabilidades a priori
+				i = 0;
+				suma = 0;
+				this.vectorCorrecto = true;
+				while (i < this.cantEntrada && this.vectorCorrecto)
+				{
+					elemento = this.vectorPriori[i].getText();
+					if (!elemento.isBlank() && elemento.matches("[0-9,.]+") && Double.parseDouble(elemento) <= 1
+							&& Double.parseDouble(elemento) >= 0)
+						suma += Double.parseDouble(elemento);
+					else
+						this.vectorCorrecto = false;
+					i++;
+				}
+				if (this.vectorCorrecto && suma != 1)
+					this.vectorCorrecto = false;
 			}
-			
-			this.botonSiguienteTrans.setEnabled(this.elementos2Correcto && this.matrizCorrecta);
-			}
-			*/
+			this.botonSiguienteCanal.setEnabled(this.vectorCorrecto && this.matrizCorrecta);
+		}
 	}
 
 	@Override

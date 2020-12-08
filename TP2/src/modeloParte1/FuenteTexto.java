@@ -19,10 +19,6 @@ public class FuenteTexto {
 	private String texto;
 	private int contadorCaracteres;
 
-	public FuenteTexto(ArrayList<Entrada> entradas) {
-		this.tabla = entradas;
-	}
-
 	public FuenteTexto(String direccion) {
 		try {
 			Entrada aux;
