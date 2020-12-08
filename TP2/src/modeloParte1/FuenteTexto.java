@@ -127,9 +127,11 @@ public class FuenteTexto {
 		int i;
 		double sumatoria = 0, prob = 0;
 		for (i = 0; i < this.tabla.size(); i++)
+		{
 			prob = this.tabla.get(i).getProbabilidad();
 			if (prob != 0)
 				sumatoria += this.tabla.get(i).getProbabilidad() * Math.log(1.0 / prob) / Math.log(2);
+		}
 		return sumatoria;
 	}
 
