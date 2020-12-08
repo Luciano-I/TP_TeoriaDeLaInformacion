@@ -101,7 +101,7 @@ public class Fuente {
 		for (i = 0; i < this.cantSimbolosEntrada; i++) {
 			prob = this.probEntrada[i];
 			if (prob != 0)
-				sumatoria += this.probEntrada[i] * Math.log(1.0 / prob) / Math.log(2);
+				sumatoria += prob * Math.log(1.0 / prob) / Math.log(2);
 		}
 		return sumatoria;
 	}
@@ -113,7 +113,7 @@ public class Fuente {
 		for (i = 0; i < this.cantSimbolosEntrada; i++) {
 			prob = this.probEntradaReal[i];
 			if (prob != 0)
-				sumatoria += this.probEntradaReal[i] * Math.log(1.0 / prob) / Math.log(2);
+				sumatoria += prob * Math.log(1.0 / prob) / Math.log(2);
 		}
 		return sumatoria;
 	}
@@ -154,7 +154,7 @@ public class Fuente {
 			for (j = 0; j < this.cantSimbolosSalida; j++) {
 				p = this.tablaCanal[i][j] * this.probEntrada[i];
 				if (p != 0)
-					retorno += -p * Math.log(p) / Math.log(2);
+					retorno += p * Math.log(1/p) / Math.log(2);
 			}
 		return retorno;
 	}
@@ -177,15 +177,14 @@ public class Fuente {
 	// *****
 
 	public double getEquivocacionABTeorica() {
-		double retorno = 0;
+		double retorno = 0, pB, pADadoB;
 		int i, j, k;
-		double pADadoB;
 		for (i = 0; i < this.cantSimbolosEntrada; i++)
 			for (j = 0; j < this.cantSimbolosSalida; j++) {
-				pADadoB = 0;
+				pB = 0;
 				for (k = 0; k < this.cantSimbolosEntrada; k++)
-					pADadoB += this.tablaCanal[k][j];
-				pADadoB = this.tablaCanal[i][j] / pADadoB;
+					pB += this.tablaCanal[k][j] * this.probEntrada[k];
+				pADadoB = this.tablaCanal[i][j] * this.probEntrada[i] / pB;
 				if (pADadoB > 0)
 					retorno += this.tablaCanal[i][j] * this.probEntrada[i] * Math.log(1.0 / pADadoB) / Math.log(2);
 			}
@@ -194,18 +193,16 @@ public class Fuente {
 
 	//PRE: Se ejecutó el método recrearTablaCanal.
 	public double getEquivocacionABExperimental() {
-		double retorno = 0;
+		double retorno = 0, pB, pADadoB;
 		int i, j, k;
-		double pADadoB;
 		for (i = 0; i < this.cantSimbolosEntrada; i++)
 			for (j = 0; j < this.cantSimbolosSalida; j++) {
-				pADadoB = 0;
+				pB = 0;
 				for (k = 0; k < this.cantSimbolosEntrada; k++)
-					pADadoB += this.tablaCanalReal[k][j];
-				pADadoB = this.tablaCanalReal[i][j] / pADadoB;
+					pB += this.tablaCanalReal[k][j] * this.probEntradaReal[k];
+				pADadoB = this.tablaCanalReal[i][j] * this.probEntradaReal[i] / pB;
 				if (pADadoB > 0)
-					retorno += this.tablaCanalReal[i][j] * this.probEntradaReal[i] * Math.log(1.0 / pADadoB)
-							/ Math.log(2);
+					retorno += this.tablaCanalReal[i][j] * this.probEntradaReal[i] * Math.log(1.0 / pADadoB) / Math.log(2);
 			}
 		return retorno;
 	}
@@ -268,21 +265,21 @@ public class Fuente {
 	}
 
 	public double propiedadBTeorica() {
-		return Math.abs(this.getInformacionMutuaABTeorica() - this.getInformacionMutuaBATeorica());
+		return this.getInformacionMutuaABTeorica() - this.getInformacionMutuaBATeorica();
 	}
 
 	public double propiedadBExperimental() {
-		return Math.abs(this.getInformacionMutuaABExperimental() - this.getInformacionMutuaBAExperimental());
+		return this.getInformacionMutuaABExperimental() - this.getInformacionMutuaBAExperimental();
 	}
 
 	public double propiedadCTeorica() {
-		return Math.abs(this.getEntropiaCanalTeorica()
-				- (this.getEntropiaATeorica() + this.getEntropiaBTeorica() - this.getInformacionMutuaABTeorica()));
+		return this.getEntropiaCanalTeorica()
+				- (this.getEntropiaATeorica() + this.getEntropiaBTeorica() - this.getInformacionMutuaABTeorica());
 	}
 
 	public double propiedadCExperimental() {
-		return Math.abs(this.getEntropiaCanalExperimental() - (this.getEntropiaAExperimental()
-				+ this.getEntropiaBExperimental() - this.getInformacionMutuaABExperimental()));
+		return this.getEntropiaCanalExperimental() - (this.getEntropiaAExperimental()
+				+ this.getEntropiaBExperimental() - this.getInformacionMutuaABExperimental());
 	}
 
 	// *****
@@ -317,8 +314,8 @@ public class Fuente {
 		retorno += "\n*****\n\n";
 		retorno += "Propiedades de la Información Mutua:\n";
 		retorno += "a) ¿I(A,B) >= 0?:\t" + this.propiedadATeorica() + "\n";
-		retorno += "b) ¿|I(A,B) - I(B,A)| = 0?:\t" + this.propiedadBTeorica() + "\n";
-		retorno += "c) ¿|H(A,B) - (H(A) + H(B) - I(A,B))| = 0?:\t" + this.propiedadCTeorica() + "\n";
+		retorno += "b) ¿I(A,B) - I(B,A) = 0?:\t" + this.propiedadBTeorica() + "\n";
+		retorno += "c) ¿H(A,B) - (H(A) + H(B) - I(A,B)) = 0?:\t" + this.propiedadCTeorica() + "\n";
 		return retorno;
 	}
 	
@@ -350,8 +347,8 @@ public class Fuente {
 		retorno += "\n*****\n\n";
 		retorno += "Propiedades de la Información Mutua:\n";
 		retorno += "a) ¿I(A,B) >= 0?:\t" + this.propiedadAExperimental() + "\n";
-		retorno += "b) ¿|I(A,B) - I(B,A)| = 0?:\t" + this.propiedadBExperimental() + "\n";
-		retorno += "c) ¿|H(A,B) - (H(A) + H(B) - I(A,B))| = 0?:\t" + this.propiedadCExperimental() + "\n";
+		retorno += "b) ¿I(A,B) - I(B,A) = 0?:\t" + this.propiedadBExperimental() + "\n";
+		retorno += "c) ¿H(A,B) - (H(A) + H(B) - I(A,B)) = 0?:\t" + this.propiedadCExperimental() + "\n";
 		retorno += "\n*****\n\n";
 		retorno += "Mensaje de entrada:\n";
 		for (int elemento: this.mensajeEntrada)
