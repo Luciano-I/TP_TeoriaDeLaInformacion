@@ -6,11 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-//
-//
-//CAMBIO: VER EL MÉTODO GENERARRLC
-//
-//
 public class FuenteTexto {
 	private ArrayList<Entrada> tabla, textoEntradas;
 	private String textoCodigo, textoRLC;
@@ -161,11 +156,6 @@ public class FuenteTexto {
 			this.textoCodigo += elemento.getCodigo();	
 	}
 	
-	
-	//CAMBIOS: La generación de RLC/compresión no tiene que ser símbolo a símbolo sino con el texto entero.
-	//Antes le asignabamos a cada Entrada un RLC y después las concatenabamos, pero quedaban muchísimos ceros en medio.
-	//De esa manera no era descomprimible (a menos que tengas una tabla que te diga qué RLC le corresponde a qué símbolo).
-	//Por ejemplo si A=1110 tendría RLC=031 y M=0000000 tendría RLC=7, AM tendría RLC=0317 que se descomprime como 11101111111 (nada que ver con lo que en realidad es)
 	//PRE: Se ejecutó generarTextoCodigo 
 		public void generarRLC() {
 			int i, longitud, cont;
