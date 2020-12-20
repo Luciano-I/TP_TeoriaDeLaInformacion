@@ -2,7 +2,9 @@ package vista;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -14,15 +16,15 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.border.BevelBorder;
+import javax.swing.text.html.HTML;
 
 import modeloParte2.Fuente;
-import javax.swing.JTextArea;
-import javax.swing.border.BevelBorder;
-import java.awt.FlowLayout;
-import java.awt.Color;
-import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
 
 public class VentanaParte2 extends JFrame implements ActionListener, KeyListener {
 	private JPanel switchEstado;
@@ -30,13 +32,12 @@ public class VentanaParte2 extends JFrame implements ActionListener, KeyListener
 	private JButton botonSiguienteCanal, botonSiguienteInicio, botonC1, botonC3, botonC2;
 	private JTextField[][] matrizCanal;
 	private JTextField[] vectorPriori;
-	private JTextArea textoTeorica, textoExperimental;
 	private Fuente fuente;
 	private boolean filasCorrectas[], matrizCorrecta, vectorCorrecto;
 	private JTextField fieldCantEntrada;
 	private JTextField fieldCantSalida;
-	private JTextField fieldLongitud;
-	private int cantEntrada, cantSalida, longitud;
+	private JTextPane textoResultados;
+	private int cantEntrada, cantSalida;
 	double tablaEntrada[] = {}, tablaCanal[][] = { {} };
 
 	public VentanaParte2() {
@@ -117,7 +118,6 @@ public class VentanaParte2 extends JFrame implements ActionListener, KeyListener
 		this.botonC1 = new JButton("Anexo 2 - Canal 1");
 		this.botonC1.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		this.botonC1.addActionListener(this);
-		this.botonC1.setEnabled(false);
 		this.botonC1.addActionListener(this);
 		this.botonC1.setActionCommand("CANAL1");
 		anexo.add(this.botonC1, BorderLayout.WEST);
@@ -125,14 +125,12 @@ public class VentanaParte2 extends JFrame implements ActionListener, KeyListener
 		this.botonC3 = new JButton("Anexo 2 - Canal 3");
 		this.botonC3.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		this.botonC3.addActionListener(this);
-		this.botonC3.setEnabled(false);
 		this.botonC3.setActionCommand("CANAL3");
 		anexo.add(this.botonC3, BorderLayout.EAST);
 
 		this.botonC2 = new JButton("Anexo 2 - Canal 2");
 		this.botonC2.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		this.botonC2.addActionListener(this);
-		this.botonC2.setEnabled(false);
 		this.botonC2.setActionCommand("CANAL2");
 		anexo.add(this.botonC2, BorderLayout.CENTER);
 
@@ -161,25 +159,6 @@ public class VentanaParte2 extends JFrame implements ActionListener, KeyListener
 		this.botonSiguienteCanal.setEnabled(false);
 		panelSigCanal.add(this.botonSiguienteCanal, BorderLayout.EAST);
 
-		JPanel marcoLongitud = new JPanel();
-		marcoLongitud.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
-		cardInicio.add(marcoLongitud, BorderLayout.NORTH);
-
-		JPanel panelLongitud = new JPanel();
-		panelLongitud.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		marcoLongitud.add(panelLongitud);
-
-		JLabel labelLongitud = new JLabel("Longitud del mensaje a generar:");
-		labelLongitud.setFont(new Font("Tahoma", Font.BOLD, 14));
-		panelLongitud.add(labelLongitud);
-
-		fieldLongitud = new JTextField();
-		fieldLongitud.addKeyListener(this);
-		fieldLongitud.setName("INICIO");
-		fieldLongitud.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		fieldLongitud.setColumns(10);
-		panelLongitud.add(fieldLongitud);
-
 		this.panelMatriz = new JPanel();
 		this.panelMatriz.setVisible(false);
 		cardCanal.add(this.panelMatriz, BorderLayout.CENTER);
@@ -188,57 +167,31 @@ public class VentanaParte2 extends JFrame implements ActionListener, KeyListener
 		switchEstado.add(cardResultados, "RESULTADOS");
 		cardResultados.setLayout(new GridLayout(1, 2, 0, 0));
 
-		JPanel marcoTeorico = new JPanel();
-		marcoTeorico.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
-		cardResultados.add(marcoTeorico);
-		marcoTeorico.setLayout(new GridLayout(0, 1, 0, 0));
+		JPanel marcoResultados = new JPanel();
+		marcoResultados.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		cardResultados.add(marcoResultados);
+		marcoResultados.setLayout(new GridLayout(0, 1, 0, 0));
 
-		JPanel panelTeorico = new JPanel();
-		panelTeorico.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		marcoTeorico.add(panelTeorico);
-		panelTeorico.setLayout(new BorderLayout(0, 0));
+		JPanel panelResultados = new JPanel();
+		panelResultados.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		marcoResultados.add(panelResultados);
+		panelResultados.setLayout(new BorderLayout(0, 0));
 
-		JLabel labelPanelTeorico = new JLabel("Resultados Te\u00F3ricos");
-		labelPanelTeorico.setFont(new Font("Tahoma", Font.BOLD, 14));
-		labelPanelTeorico.setHorizontalAlignment(SwingConstants.CENTER);
-		panelTeorico.add(labelPanelTeorico, BorderLayout.NORTH);
+		JLabel labelPanelResultados = new JLabel("Resultados");
+		labelPanelResultados.setFont(new Font("Tahoma", Font.BOLD, 14));
+		labelPanelResultados.setHorizontalAlignment(SwingConstants.CENTER);
+		panelResultados.add(labelPanelResultados, BorderLayout.NORTH);
 
-		JPanel panelMatrizTeorica = new JPanel();
-		panelTeorico.add(panelMatrizTeorica, BorderLayout.CENTER);
-		panelMatrizTeorica.setLayout(new BorderLayout(0, 0));
+		JPanel panelTextoResultados = new JPanel();
+		panelResultados.add(panelTextoResultados, BorderLayout.CENTER);
+		panelTextoResultados.setLayout(new BorderLayout(0, 0));
 
-		JScrollPane scrollTeorica = new JScrollPane();
-		panelMatrizTeorica.add(scrollTeorica, BorderLayout.CENTER);
-
-		this.textoTeorica = new JTextArea();
-		this.textoTeorica.setEditable(false);
-		scrollTeorica.setViewportView(this.textoTeorica);
-
-		JPanel marcoExperimental = new JPanel();
-		marcoExperimental.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
-		cardResultados.add(marcoExperimental);
-		marcoExperimental.setLayout(new GridLayout(0, 1, 0, 0));
-
-		JPanel panelExperimental = new JPanel();
-		panelExperimental.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		marcoExperimental.add(panelExperimental);
-		panelExperimental.setLayout(new BorderLayout(0, 0));
-
-		JLabel labelPanelExperimental = new JLabel("Resultados Experimentales");
-		labelPanelExperimental.setHorizontalAlignment(SwingConstants.CENTER);
-		labelPanelExperimental.setFont(new Font("Tahoma", Font.BOLD, 14));
-		panelExperimental.add(labelPanelExperimental, BorderLayout.NORTH);
-
-		JPanel panelMatrizExperimental = new JPanel();
-		panelExperimental.add(panelMatrizExperimental, BorderLayout.CENTER);
-		panelMatrizExperimental.setLayout(new BorderLayout(0, 0));
-
-		JScrollPane scrollExperimental = new JScrollPane();
-		panelMatrizExperimental.add(scrollExperimental, BorderLayout.CENTER);
-
-		this.textoExperimental = new JTextArea();
-		this.textoExperimental.setEditable(false);
-		scrollExperimental.setViewportView(this.textoExperimental);
+		JScrollPane scrollResultados = new JScrollPane();
+		panelTextoResultados.add(scrollResultados, BorderLayout.CENTER);
+		
+		textoResultados = new JTextPane();
+		textoResultados.setEditable(false);
+		scrollResultados.setViewportView(textoResultados);
 
 		this.vectorCorrecto = false;
 		this.matrizCorrecta = false;
@@ -252,7 +205,6 @@ public class VentanaParte2 extends JFrame implements ActionListener, KeyListener
 	public void actionPerformed(ActionEvent arg0) {
 		JButton boton = (JButton) arg0.getSource();
 		CardLayout layout = (CardLayout) this.switchEstado.getLayout();
-		this.longitud = Integer.parseInt(this.fieldLongitud.getText());
 		if (boton.getActionCommand().equals("SIGINICIO")) {
 			// Pasa a la pantalla para generar un canal
 			this.cantEntrada = Integer.parseInt(this.fieldCantEntrada.getText());
@@ -306,13 +258,9 @@ public class VentanaParte2 extends JFrame implements ActionListener, KeyListener
 
 	public void generarDatosCanal() {
 		this.fuente = new Fuente(this.tablaEntrada, cantEntrada, this.tablaCanal, cantSalida);
-		this.textoTeorica.setText(this.fuente.getResultadosTeoricos());
-		this.textoTeorica.setCaretPosition(0);
-		this.fuente.generarMensajeEntrada(this.longitud);
-		this.fuente.enviarMensaje();
-		this.fuente.recrearTablaCanal();
-		this.textoExperimental.setText(this.fuente.getResultadosExperimentales());
-		this.textoExperimental.setCaretPosition(0);
+		this.textoResultados.setContentType("text/html");
+		this.textoResultados.setText(this.fuente.getResultados());
+		this.textoResultados.setCaretPosition(0);
 	}
 
 	public void inicializarPanelCanal() {
@@ -383,27 +331,14 @@ public class VentanaParte2 extends JFrame implements ActionListener, KeyListener
 			// Valida los datos necesarios para activar los botones de la primera pantalla
 			String textoCantEntrada = this.fieldCantEntrada.getText();
 			String textoCantSalida = this.fieldCantSalida.getText();
-			String textoLongitud = this.fieldLongitud.getText();
 			boolean validoCantEntrada = !textoCantEntrada.isBlank() && textoCantEntrada.matches("[0-9]+")
 					&& Integer.parseInt(textoCantEntrada) > 1 && Integer.parseInt(textoCantEntrada) < 8;
 			boolean validoCantSalida = !textoCantSalida.isBlank() && textoCantSalida.matches("[0-9]+")
 					&& Integer.parseInt(textoCantSalida) > 1 && Integer.parseInt(textoCantSalida) < 8;
-			boolean validoLongitud = !textoLongitud.isBlank() && textoLongitud.matches("[0-9]+")
-					&& Integer.parseInt(textoLongitud) > 1;
-			if (validoLongitud) {
-				this.botonC1.setEnabled(true);
-				this.botonC2.setEnabled(true);
-				this.botonC3.setEnabled(true);
-				if (validoCantEntrada && validoCantSalida)
-					this.botonSiguienteInicio.setEnabled(true);
-				else
-					this.botonSiguienteInicio.setEnabled(false);
-			} else {
-				this.botonC1.setEnabled(false);
-				this.botonC2.setEnabled(false);
-				this.botonC3.setEnabled(false);
+			if (validoCantEntrada && validoCantSalida)
+				this.botonSiguienteInicio.setEnabled(true);
+			else
 				this.botonSiguienteInicio.setEnabled(false);
-			}
 		} else {
 			// Valida los campos de la segunda pantalla (para canales nuevas)
 			int i, j;
