@@ -1,12 +1,11 @@
 package modeloParte1;
 
-import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 public class Compresor {
 	public static void generarRLC(String direccion)
@@ -40,10 +39,7 @@ public class Compresor {
 				}
 			}
 			System.out.println(textoSalida);
-			OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(direccionSalida),"utf-16");
-			BufferedWriter salida = new BufferedWriter(out);
-			salida.write(textoSalida);
-			salida.close();
+			Files.writeString(Paths.get(direccionSalida), textoSalida, StandardCharsets.UTF_8, StandardOpenOption.CREATE);
 			
 		} catch (FileNotFoundException e) {
 			System.out.println("No se encontró el archivo.");
