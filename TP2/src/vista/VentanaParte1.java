@@ -19,6 +19,7 @@ import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import modeloParte1.RLC;
 import modeloParte1.FuenteTexto;
 import javax.swing.border.BevelBorder;
 import java.awt.Font;
@@ -27,10 +28,9 @@ public class VentanaParte1 extends JFrame implements ActionListener {
 	private JPanel switchEstado;
 	private JFileChooser fileChooser;
 	private String direccion;
-	private JButton botonHuffman, botonShannon;
+	private JButton botonHuffman, botonShannon, botonRLC;
 	private JLabel labelDireccion;
-	private FuenteTexto fuente;
-	private JTextArea textoOriginal, textoCodigo, textoRLC, textoRendimiento, textoRedundancia, textoCompresion;
+	private JTextArea textoOriginal, textoCodigo, textoRendimiento, textoRedundancia, textoCompresion;
 
 	public VentanaParte1() {
 		getContentPane().setLayout(new BorderLayout(0, 0));
@@ -70,7 +70,7 @@ public class VentanaParte1 extends JFrame implements ActionListener {
 
 		JPanel panelInicioBotones = new JPanel();
 		panelInicio.add(panelInicioBotones);
-		panelInicioBotones.setLayout(new GridLayout(0, 2, 10, 0));
+		panelInicioBotones.setLayout(new GridLayout(0, 3, 10, 0));
 
 		this.botonHuffman = new JButton("Huffman");
 		botonHuffman.setFont(new Font("Tahoma", Font.BOLD, 14));
@@ -86,6 +86,13 @@ public class VentanaParte1 extends JFrame implements ActionListener {
 		this.botonShannon.setEnabled(false);
 		panelInicioBotones.add(this.botonShannon);
 
+		this.botonRLC = new JButton("RLC");
+		this.botonRLC.addActionListener(this);
+		this.botonRLC.setFont(new Font("Tahoma", Font.BOLD, 14));
+		this.botonRLC.setEnabled(false);
+		this.botonRLC.setActionCommand("RLC");
+		panelInicioBotones.add(this.botonRLC);
+
 		JPanel cardResultados = new JPanel();
 		switchEstado.add(cardResultados, "RESULTADOS");
 		cardResultados.setLayout(new BorderLayout(0, 5));
@@ -96,7 +103,7 @@ public class VentanaParte1 extends JFrame implements ActionListener {
 
 		JPanel panelTextos = new JPanel();
 		panelResultados.add(panelTextos, BorderLayout.CENTER);
-		panelTextos.setLayout(new GridLayout(0, 3, 10, 0));
+		panelTextos.setLayout(new GridLayout(0, 2, 10, 0));
 
 		JPanel panel = new JPanel();
 		panel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
@@ -128,26 +135,9 @@ public class VentanaParte1 extends JFrame implements ActionListener {
 		textoCodigo.setLineWrap(true);
 		scrollCodigo.setViewportView(this.textoCodigo);
 
-		JLabel labelCodigo = new JLabel("Texto codificado");
+		JLabel labelCodigo = new JLabel("Resultado");
 		labelCodigo.setFont(new Font("Tahoma", Font.BOLD, 12));
 		scrollCodigo.setColumnHeaderView(labelCodigo);
-
-		JPanel panel_2 = new JPanel();
-		panel_2.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
-		panelTextos.add(panel_2);
-		panel_2.setLayout(new GridLayout(0, 1, 0, 0));
-
-		JScrollPane scrollRLC = new JScrollPane();
-		panel_2.add(scrollRLC);
-
-		this.textoRLC = new JTextArea();
-		textoRLC.setEditable(false);
-		textoRLC.setLineWrap(true);
-		scrollRLC.setViewportView(this.textoRLC);
-
-		JLabel labelRLC = new JLabel("RLC");
-		labelRLC.setFont(new Font("Tahoma", Font.BOLD, 12));
-		scrollRLC.setColumnHeaderView(labelRLC);
 
 		JPanel panelCalculos = new JPanel();
 		panelCalculos.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
@@ -220,27 +210,36 @@ public class VentanaParte1 extends JFrame implements ActionListener {
 				this.direccion = fileChooser.getSelectedFile().getAbsolutePath();
 				this.botonHuffman.setEnabled(true);
 				this.botonShannon.setEnabled(true);
+				this.botonRLC.setEnabled(true);
 				indice = this.direccion.lastIndexOf("\\");
 				this.labelDireccion.setText(this.direccion.substring(indice + 1));
 			}
 		} else {
-			// Aplica el código seleccionado, realiza los cálculos necesarios y muestra los resultados
-			this.fuente = new FuenteTexto(this.direccion);
-			if (boton.getActionCommand().equals("HUFFMAN"))
-				this.fuente.huffman();
-			else
-				this.fuente.shannonFano();
-			this.fuente.generarTextoCodigo();
-			this.fuente.generarRLC();
-			this.textoOriginal.setText(this.fuente.getTexto());
-			this.textoOriginal.setCaretPosition(0);
-			this.textoCodigo.setText(this.fuente.getTextoCodigo());
-			this.textoCodigo.setCaretPosition(0);
-			this.textoRLC.setText(this.fuente.getTextoRLC());
-			this.textoRLC.setCaretPosition(0);
-			this.textoRendimiento.setText(this.fuente.getRendimiento() + "");
-			this.textoRedundancia.setText(this.fuente.getRedundancia() + "");
-			this.textoCompresion.setText(this.fuente.getTasaCompresion() + " : 1");
+			if (boton.getActionCommand().equals("RLC")) {
+				RLC rlc = new RLC(this.direccion);
+				this.textoOriginal.setText(rlc.getTextoEntrada());
+				this.textoOriginal.setCaretPosition(0);
+				this.textoCodigo.setText(rlc.getTextoSalida());
+				this.textoCodigo.setCaretPosition(0);
+				this.textoRedundancia.setText("No aplica.");
+				this.textoRendimiento.setText("No aplica.");
+				this.textoCompresion.setText(rlc.getTasaCompresion() + " : 1");
+			} else {
+				// Aplica el código seleccionado, realiza los cálculos necesarios y muestra los resultados
+				FuenteTexto fuente = new FuenteTexto(this.direccion);
+				if (boton.getActionCommand().equals("HUFFMAN"))
+					fuente.huffman();
+				else
+					fuente.shannonFano();
+				fuente.generarTextoCodigo();
+				this.textoOriginal.setText(fuente.getTexto());
+				this.textoOriginal.setCaretPosition(0);
+				this.textoCodigo.setText(fuente.getTextoCodigo());
+				this.textoCodigo.setCaretPosition(0);
+				this.textoRendimiento.setText(fuente.getRendimiento() + "");
+				this.textoRedundancia.setText(fuente.getRedundancia() + "");
+				this.textoCompresion.setText(fuente.getTasaCompresion() + " : 1");
+			}
 			layout.show(this.switchEstado, "RESULTADOS");
 		}
 	}

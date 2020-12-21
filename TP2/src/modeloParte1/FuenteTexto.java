@@ -1,21 +1,28 @@
 package modeloParte1;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 
 public class FuenteTexto {
 	private ArrayList<Entrada> tabla, textoEntradas;
-	private String textoCodigo, textoRLC;
+	private String textoCodigo;
 	private double[] probAcum;
-	private String texto;
+	private String texto, terminador, direccion;
 	private int contadorCaracteres;
+	private long tamanoComprimido, tamanoOriginal;
 
 	// Genera una fuente de memoria nula a partir de un archivo de texto.
 	public FuenteTexto(String direccion) {
 		try {
+			this.direccion = direccion;
 			Entrada aux;
 			char caracter;
 			HashMap<Character, Entrada> caracteresTexto = new HashMap<Character, Entrada>();
@@ -34,7 +41,7 @@ public class FuenteTexto {
 					caracteresTexto.get(caracter).setOcurrencia();
 				this.textoEntradas.add(caracteresTexto.get(caracter));
 			}
-
+			this.tamanoOriginal = this.contadorCaracteres * 8; //Longitud en bits del texto original para luego comparar con el comprimido
 			for (Entrada elemento : this.tabla)
 				elemento.setProbabilidad(this.contadorCaracteres);
 			Collections.sort(this.tabla);
@@ -52,6 +59,7 @@ public class FuenteTexto {
 		if (this.tabla.size() == 2) {
 			this.tabla.get(0).setCodigo("0");
 			this.tabla.get(1).setCodigo("1");
+			this.terminador = " - Huffman.txt";
 		} else {
 			// Ida de la recursividad
 			Entrada aux1, aux2, aux3 = null;
@@ -76,6 +84,7 @@ public class FuenteTexto {
 	public void shannonFano() {
 		this.generarProbAcumSF();
 		this.recShannonFano(1, this.tabla.size());
+		this.terminador = " - Shannon-Fano.txt";
 	}
 
 	private void generarProbAcumSF() {
@@ -153,39 +162,21 @@ public class FuenteTexto {
 
 	//PRE: Se ejecutó huffman o shannonFano
 	public void generarTextoCodigo() {
+		String direccionSalida = this.direccion.replace(".txt",this.terminador);
 		this.textoCodigo = "";
 		for (Entrada elemento : this.textoEntradas)
-			this.textoCodigo += elemento.getCodigo();	
-	}
-	
-	//PRE: Se ejecutó generarTextoCodigo 
-		public void generarRLC() {
-			int i, longitud, cont;
-			this.textoRLC = "";
-			longitud = this.textoCodigo.length();
-			i = 0;
-			while (i<longitud)
-	        {
-	            cont = 0;
-	            while (i<longitud && this.textoCodigo.charAt(i)=='0') {
-	                cont++;
-	                i++;
-	            }
-	            this.textoRLC += cont;
-	            cont = 0;
-	            while (i<longitud && this.textoCodigo.charAt(i)=='1'){
-	                cont++;
-	                i++;
-	            }
-	            if (cont!=0)
-	            	this.textoRLC += cont;
-
-	        }
+			this.textoCodigo += elemento.getCodigo();
+		this.tamanoComprimido = this.textoCodigo.length();
+		try {
+			Files.writeString(Paths.get(direccionSalida), this.textoCodigo, StandardCharsets.UTF_16, StandardOpenOption.CREATE);
+		} catch (IOException e) {
+			System.out.println("Error al crear el archivo " + direccionSalida);
 		}
+	}
 
-	// Se ejecutaron generarTextoCodigo y generarRLC
+	//PRE: Se ejecutó generarTextoCodigo
 	public double getTasaCompresion() {
-		return (double) this.textoCodigo.length() / this.textoRLC.length();
+		return (double) this.tamanoOriginal / this.tamanoComprimido;
 	}
 
 	public String getTexto() {
@@ -195,10 +186,5 @@ public class FuenteTexto {
 	// Se ejecutó generarTextoCodigo
 	public String getTextoCodigo() {
 		return this.textoCodigo;
-	}
-
-	// Se ejecutó generarRLC
-	public String getTextoRLC() {
-		return this.textoRLC;
 	}
 }
