@@ -219,6 +219,5 @@ public class FuenteTexto {
 			retorno += "    " + aux + "     -     " + df.format(entrada.getProbabilidad()) + "     -     " + entrada.getCodigo() + "\n";
 		}
 		return retorno;
-	}
-	
+	}	
 }
