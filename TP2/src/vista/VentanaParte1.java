@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,12 +18,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
+import javax.swing.border.BevelBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import modeloParte1.RLC;
 import modeloParte1.FuenteTexto;
-import javax.swing.border.BevelBorder;
-import java.awt.Font;
+import modeloParte1.RLC;
 
 public class VentanaParte1 extends JFrame implements ActionListener {
 	private JPanel switchEstado;
@@ -30,7 +30,8 @@ public class VentanaParte1 extends JFrame implements ActionListener {
 	private String direccion;
 	private JButton botonHuffman, botonShannon, botonRLC;
 	private JLabel labelDireccion;
-	private JTextArea textoOriginal, textoCodigo, textoRendimiento, textoRedundancia, textoCompresion;
+	private JPanel panel_2, panelTextos;
+	private JTextArea textoOriginal, textoCodigo, textoAlfabeto, textoRendimiento, textoRedundancia, textoCompresion;
 
 	public VentanaParte1() {
 		getContentPane().setLayout(new BorderLayout(0, 0));
@@ -101,13 +102,13 @@ public class VentanaParte1 extends JFrame implements ActionListener {
 		cardResultados.add(panelResultados);
 		panelResultados.setLayout(new BorderLayout(0, 10));
 
-		JPanel panelTextos = new JPanel();
-		panelResultados.add(panelTextos, BorderLayout.CENTER);
-		panelTextos.setLayout(new GridLayout(0, 2, 10, 0));
+		this.panelTextos = new JPanel();
+		panelResultados.add(this.panelTextos, BorderLayout.CENTER);
+		this.panelTextos.setLayout(new GridLayout(0, 3, 10, 0));
 
 		JPanel panel = new JPanel();
 		panel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
-		panelTextos.add(panel);
+		this.panelTextos.add(panel);
 		panel.setLayout(new GridLayout(0, 1, 0, 0));
 
 		JScrollPane scrollOriginal = new JScrollPane();
@@ -124,7 +125,7 @@ public class VentanaParte1 extends JFrame implements ActionListener {
 
 		JPanel panel_1 = new JPanel();
 		panel_1.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
-		panelTextos.add(panel_1);
+		this.panelTextos.add(panel_1);
 		panel_1.setLayout(new GridLayout(0, 1, 0, 0));
 
 		JScrollPane scrollCodigo = new JScrollPane();
@@ -138,6 +139,26 @@ public class VentanaParte1 extends JFrame implements ActionListener {
 		JLabel labelCodigo = new JLabel("Resultado");
 		labelCodigo.setFont(new Font("Tahoma", Font.BOLD, 12));
 		scrollCodigo.setColumnHeaderView(labelCodigo);
+		
+		this.panel_2 = new JPanel();
+		this.panel_2.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		this.panelTextos.add(this.panel_2);
+		this.panel_2.setLayout(new GridLayout(0, 1, 0, 0));
+		
+		JScrollPane scrollAlfabeto_1 = new JScrollPane();
+		this.panel_2.add(scrollAlfabeto_1);
+		
+		JLabel labelAlfabeto = new JLabel("Alfabeto resultante");
+		labelAlfabeto.setFont(new Font("Tahoma", Font.BOLD, 12));
+		scrollAlfabeto_1.setColumnHeaderView(labelAlfabeto);
+		
+		this.textoAlfabeto = new JTextArea();
+		textoAlfabeto.setColumns(3);
+		textoAlfabeto.setRows(1);
+		textoAlfabeto.setTabSize(0);
+		this.textoAlfabeto.setLineWrap(true);
+		this.textoAlfabeto.setEditable(false);
+		scrollAlfabeto_1.setViewportView(this.textoAlfabeto);
 
 		JPanel panelCalculos = new JPanel();
 		panelCalculos.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
@@ -217,6 +238,10 @@ public class VentanaParte1 extends JFrame implements ActionListener {
 		} else {
 			if (boton.getActionCommand().equals("RLC")) {
 				RLC rlc = new RLC(this.direccion);
+				this.panel_2.setVisible(false);
+				this.panelTextos.remove(this.panel_2);
+				GridLayout grid = (GridLayout) this.panelTextos.getLayout();
+				grid.setColumns(2);
 				this.textoOriginal.setText(rlc.getTextoEntrada());
 				this.textoOriginal.setCaretPosition(0);
 				this.textoCodigo.setText(rlc.getTextoSalida());
@@ -236,6 +261,8 @@ public class VentanaParte1 extends JFrame implements ActionListener {
 				this.textoOriginal.setCaretPosition(0);
 				this.textoCodigo.setText(fuente.getTextoCodigo());
 				this.textoCodigo.setCaretPosition(0);
+				this.textoAlfabeto.setText(fuente.getTabla());
+				this.textoAlfabeto.setCaretPosition(0);
 				this.textoRendimiento.setText(fuente.getRendimiento() + "");
 				this.textoRedundancia.setText(fuente.getRedundancia() + "");
 				this.textoCompresion.setText(fuente.getTasaCompresion() + " : 1");

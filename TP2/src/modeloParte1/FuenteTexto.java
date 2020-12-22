@@ -1,15 +1,17 @@
 package modeloParte1;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 
 public class FuenteTexto {
 	private ArrayList<Entrada> tabla, textoEntradas;
@@ -44,7 +46,7 @@ public class FuenteTexto {
 			this.tamanoOriginal = this.contadorCaracteres * 8; //Longitud en bits del texto original para luego comparar con el comprimido
 			for (Entrada elemento : this.tabla)
 				elemento.setProbabilidad(this.contadorCaracteres);
-			Collections.sort(this.tabla);
+			Collections.sort(this.tabla);	
 
 		} catch (FileNotFoundException e) {
 			System.out.println("No se encontró el archivo.");
@@ -187,4 +189,36 @@ public class FuenteTexto {
 	public String getTextoCodigo() {
 		return this.textoCodigo;
 	}
+	
+	public String getTabla() {
+		String retorno = "", aux;
+		char caracter;
+		DecimalFormatSymbols dfSimbolos = new DecimalFormatSymbols(Locale.getDefault());
+		dfSimbolos.setDecimalSeparator('.');
+		DecimalFormat df = new DecimalFormat("#.#####",dfSimbolos);
+		retorno += "Símbolo - Probabilidad - Código:\n";
+		for (Entrada entrada: this.tabla)
+		{
+			caracter = entrada.getSimbolo().charAt(0);
+			switch (caracter) {
+			case ' ':
+				aux = "' '";
+				break;
+			case '\n':
+				aux = "'\\n'";
+				break;
+			case '\r':
+				aux = "'\\r'";
+				break;
+			case '\t':
+				aux = "'\\t'";
+				break;
+			default:
+				aux = caracter + "";
+			}
+			retorno += "    " + aux + "     -     " + df.format(entrada.getProbabilidad()) + "     -     " + entrada.getCodigo() + "\n";
+		}
+		return retorno;
+	}
+	
 }
